@@ -10,7 +10,9 @@ var num = 10
 
 
 
-/* OPTIONAL - there can be or cannot be a value for that variable. Absense of value. Value or it can be nil
+/* OPTIONAL - there can be or cannot be a value for that variable. Absense of value. Value or it can be nil.
+ 
+    Initialized means some value is assigned to the variable.
  */
 
 var someName: String?
@@ -30,6 +32,11 @@ if let newName = someName {
     print(newName)
 }
 
+// shorthanded if let
+if let someName {
+    print(someName)
+}
+
 // 2. guard let
 func checkingGuardLetUse() {
     guard let newValue = someName else { return }
@@ -39,7 +46,7 @@ func checkingGuardLetUse() {
 checkingGuardLetUse()
 
 // 3. Coalescing
-print(newValue ?? "Default value")
+print(someName ?? "Default value")
 
 // 4. Force unwrap - use it only when you're 100% sure there is a value.
 //print(someName!)

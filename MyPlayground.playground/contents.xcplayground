@@ -2,11 +2,15 @@
 <playground version='6.0' target-platform='ios' buildActiveScheme='true' executeOnSourceChanges='true' importAppTypes='true'>
     <pages>
         <page name='Collections'/>
-        <page name='TrainingNotes'/>
+        <page name='Variables &amp; Data Structure'/>
         <page name='Optional'/>
         <page name='Classes'/>
         <page name='Struct'/>
-        <page name='Assessment2'/>
+        <page name='Assignment2'/>
         <page name='Assignment1'/>
+        <page name='Conditionals'/>
+        <page name='For'/>
+        <page name='Initializers'/>
+        <page name='Enum'/>
     </pages>
 </playground>

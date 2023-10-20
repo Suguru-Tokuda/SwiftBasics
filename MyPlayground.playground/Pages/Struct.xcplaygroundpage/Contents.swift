@@ -3,10 +3,11 @@
 import Foundation
 
 // Value type
+// Structs are immutable by default
 struct Employee {
     var name: String
     var id: Int
-    var sal: Int?
+    var sal: Int
     
     func walk() -> Void {
         print("\(name) is walking.")
@@ -23,10 +24,19 @@ struct Employee {
     func getEmpId() -> Int {
         return id
     }
+    
+    // when mutating func is called
+    // the data is popped from the stack memory
+    // and the copy of the data gets inserted into
+    // the stack memory
+    mutating func changeSal(newSal: Int) {
+        self.sal = newSal
+    }
 }
 
 // Struct provides memberwise initializers
-let emp1 = Employee(name: "Suguru", empId: 1)
+let emp1 = Employee(name: "Suguru", id: 1, sal: 2000)
+
 
 // Struct doesn't support inheritance
 //struct ITEmployee: Employee {
