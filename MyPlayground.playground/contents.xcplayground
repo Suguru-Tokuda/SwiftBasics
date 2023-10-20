@@ -12,5 +12,6 @@
         <page name='For'/>
         <page name='Initializers'/>
         <page name='Enum'/>
+        <page name='Assignment3'/>
     </pages>
 </playground>
