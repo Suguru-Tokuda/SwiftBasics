@@ -189,7 +189,7 @@ struct Fighter {
     var attackPoint: Int
     
     func attack() {
-        print("\(name) attacked (attack point: \(attackPoint).")
+        print("\(name) attacked (attack point: \(attackPoint)).")
     }
 }
 

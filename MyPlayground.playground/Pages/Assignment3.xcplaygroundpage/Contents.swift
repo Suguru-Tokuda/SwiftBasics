@@ -168,7 +168,7 @@ class PersonClassWithCustomInit {
     }
 }
 
-class PersonStructWithCustomInit {
+struct PersonStructWithCustomInit {
     var firstName: String
     var lastName: String
     var email: String
@@ -243,12 +243,23 @@ var checkboxItem = ChildCheckboxItem(isSelected: false, title: "Checkbox")
 enum Animals: String {
     case dog = "Dog",
          cat = "Cat",
-         horse = "Horse"
+         horse
 }
 
-print(Animals.dog.rawValue)
-print(Animals.cat.rawValue)
-print(Animals.horse.rawValue)
+print(Animals.dog.rawValue) // "Dog
+print(Animals.cat.rawValue) // "Cat"
+print(Animals.horse.rawValue) // "hourse" because no specific value is assigned.
+
+// The first value for Int is 0 if no value is specified.
+enum Languages: Int {
+    case English,
+         Spanish = 5,
+         French
+}
+
+print(Languages.English.rawValue) // 0
+print(Languages.Spanish.rawValue) // 5
+print(Languages.French.rawValue) // 6 because 5 is assigned to Spanish. French is next and 6 is automatically assigned to it.
 
 // Associated Type Enum
 enum iPhones {

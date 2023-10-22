@@ -119,4 +119,3 @@ var arrayOfInt = [1, 2, 3, 4, 5, 6]
 arrayOfInt.append(7)
 
 var collection: [Any] = [11, "c", false]
-
