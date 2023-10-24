@@ -34,7 +34,7 @@ if number == 5 {
 
 if number < 5 {
     print("number is smaller than 5")
-} else if number > 5{
+} else if number > 5 {
     print("number is greater than 5")
 }
 

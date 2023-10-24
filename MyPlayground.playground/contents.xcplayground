@@ -13,5 +13,10 @@
         <page name='Initializers'/>
         <page name='Enum'/>
         <page name='Assignment3'/>
+        <page name='Protocols'/>
+        <page name='Extensions'/>
+        <page name='Types'/>
+        <page name='Generics'/>
+        <page name='Assignment4'/>
     </pages>
 </playground>

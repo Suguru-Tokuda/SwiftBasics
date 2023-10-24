@@ -716,3 +716,120 @@ print(String(iPhone14.getPrice()))
 print(String(iPhoneSE.getPrice()))
 print(String(oldIPhone.getPrice()))
 ```
+
+## Protocols
+
+Defines the list of rules or blueprints which class, struct or enum need to adopt/confirm to it. Types that confirm to protocols nee to give implementation for function/variables. Protocols make it possible to have polyphormis and abstraction.
+
+```
+protocol Driveable {
+    // You cannot assign initial value to a variable.
+    // Needs at least get. set is not reuiqred.
+    var numberOfGears: Int { get set }
+
+    func accelerate(speed: Int)
+    func applyBreaks()
+
+    // Optional function
+    func stearing(direction: String)
+}
+
+extension Driveable {
+    // defualt implementation
+    func stearing(direction: String) {
+        print("Stearing in Driveable protocol in \(direction)")
+    }
+
+    var numberOfGears: Int {
+        return 1
+    }
+}
+
+struct Car : Driveable {
+    var numberOfGears: Int
+
+    func accelerate(speed: Int) {
+        print("Accelerating by \(speed)")
+    }
+
+    func applyBreaks() {
+        print("Applying breaks")
+    }
+
+    // no need to implement because default implementation is created.
+//    func stearing(direction: String) {
+//        print("stearing the Car in \(direction)")
+//    }
+}
+
+let c1 = Car(numberOfGears: 5)
+c1.accelerate(speed: 10)
+c1.stearing(direction: "Left")
+c1.applyBreaks()
+print("")
+
+struct Truck : Driveable {
+    var numberOfGears: Int
+
+    func accelerate(speed: Int) {
+        print("Accelerating Truck by \(speed)")
+    }
+
+    func applyBreaks() {
+        print("Applying breaks for Truck")
+    }
+
+    func stearing(direction: String) {
+        print("Stearing the Truck in \(direction)")
+    }
+
+    // good practice.
+    // make variables private
+    mutating func setNumberOfGears(gears: Int) {
+        self.numberOfGears = gears
+    }
+}
+
+var t1 = Truck(numberOfGears: 6)
+t1.accelerate(speed: 100)
+t1.stearing(direction: "Right")
+t1.applyBreaks()
+t1.setNumberOfGears(gears: 7)
+print("")
+
+class ElectricCar : Driveable {
+    var numberOfGears: Int = 10
+
+    func accelerate(speed: Int) {
+        print("Accelerating Electric car by \(speed)")
+    }
+
+    func applyBreaks() {
+        print("Applying breaks for Electric car")
+    }
+}
+
+let electricCar = ElectricCar()
+electricCar.stearing(direction: "Left")
+```
+
+## Extensions
+
+Extensions allow us to add more meaning/functionality to the existing types or we can use them for protocol confirmance.
+
+```
+extension Int {
+    func square() -> Int {
+        return self * self
+    }
+
+    // varialbes need to be a Computed Varialbe
+    var isNumberEven: Bool {
+        return self % 2 == 0
+    }
+}
+
+let i1: Int = 5
+let result = i1.square()
+print("Square - \(i1) is \(result)")
+```
