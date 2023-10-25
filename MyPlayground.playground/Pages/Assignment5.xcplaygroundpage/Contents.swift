@@ -13,6 +13,50 @@ import Foundation
        Addition to the usage of Generic with functions. Generic can also be used for classes, structs, and enums. The advantage of Generics in any data types is to make the code reusable.
  */
 
+// Generic with Class
+class Housing {
+    var numberOfBedrooms: Int
+    
+    init(numberOfBedrooms: Int) {
+        self.numberOfBedrooms = numberOfBedrooms
+    }
+}
+
+class House : Housing {
+    var houseName: String
+    
+    init(houseName: String, numberOfBedRooms: Int) {
+        self.houseName = houseName
+        super.init(numberOfBedrooms: numberOfBedRooms)
+    }
+}
+
+class Apartment : Housing {
+    var apartmentName: String
+    
+    init(apartmentName: String, numberOfBedrooms: Int) {
+        self.apartmentName = apartmentName
+        super.init(numberOfBedrooms: numberOfBedrooms)
+    }
+}
+
+class PersonClassForAss5<T> {
+    var firstName: String
+    var lastName: String
+    var property: T
+
+    init(firstName: String, lastName: String, property: T) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.property = property
+    }
+}
+
+let personWithHouse = PersonClassForAss5(firstName: "Suguru", lastName: "Tokuda", property: House(houseName: "House", numberOfBedRooms: 5))
+let personWithApartment = PersonClassForAss5(firstName: "Suguru 2", lastName: "Tokuda 2", property: Apartment(apartmentName: "Apartment", numberOfBedrooms: 2))
+
+
+// Generic with Stack
 struct Stack<T> {
     var stack: [T] = []
     var count: Int = 0 // used to track the length of the stack
@@ -49,6 +93,28 @@ if let removed = stack.pop() {
 }
 
 print("After removal: \(stack.stack)")
+
+// Generic with enum
+enum GenericEnum<T> {
+    case one(val: T),
+         two(val: T),
+         three(val: T)
+    
+    func getValue() -> T {
+        switch self {
+        case .one(val: let val):
+            return val
+        case .two(val: let val):
+            return val
+        case .three(val: let val):
+            return val
+        }
+    }
+}
+
+var one = GenericEnum<String>.one(val: "one")
+print(one.getValue())
+
 
 /*
     MARK: 3. Higther Order Functions
