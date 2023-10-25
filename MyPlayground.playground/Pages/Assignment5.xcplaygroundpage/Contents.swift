@@ -115,70 +115,6 @@ enum GenericEnum<T> {
 var one = GenericEnum<String>.one(val: "one")
 print(one.getValue())
 
-
-/*
-    MARK: 3. Higther Order Functions
-    Higher order functions take a collection. The caller can use a custom function (closure) to various operations such as:
-    1) map
-    2) filter
-    3) reduce
-    4) sort
-    5) flatMap
-    6) compactMap
-    7) forEach
-
- */
-
-// 1. map: takes a collection and return a collection
-var randomNums: [Int] = []
-for i in 0..<100 {
-    // add random num
-    randomNums.append(Int.random(in: 1..<100))
-}
-
-let randomNumsPlusOne = randomNums.map { $0 + 1 } // add 1 to every number from randomNums and assign the return value to a constant.
-print(randomNumsPlusOne)
-
-// 2. Filter: filters a collection for the condition specified inside a closure.
-let numsOver50 = randomNums.filter { $0 > 50 } // filter numbers that are greater than 50
-print(numsOver50)
-
-// 3. Reduce: reduce function temporarily stores a value and applies the specified operation for each element.
-let sumOfRandomNums = randomNums.reduce(0, +)
-// equivalent but set the initial value to 100
-let sumOfRandomNums2 = randomNums.reduce(100) { partialResult, num in
-    partialResult + num
-}
-print(sumOfRandomNums)
-print(sumOfRandomNums2) // 100 greater than sumOfRandomNums
-
-// 4. Sort
-let randomNumsSortAsc = randomNums.sorted(by: { $0 < $1 })
-let randomNumsSortDesc = randomNums.sorted(by: { $0 > $1 })
-
-print(randomNumsSortAsc)
-print(randomNumsSortDesc)
-
-// 5. FlatMap
-let nums: [[Int]] = [[1,2,3], [4,5,6]]
-let flatNums = nums.flatMap { $0.count } // instead of returning all numbers, return count for individual array inside the multi dimensional array.
-print(flatNums)
-
-let wordList: [String] = ["Hello", "World"]
-let flattenedWordListLower: [Character] = wordList.flatMap { $0.lowercased() } // converts a String array into a Character array. During the operation all the cases are lowered.
-
-print(flattenedWordListLower)
-
-// 6. CompactMap: used to remove all nils inside a collection.
-let optionalNums: [Int?] = [1, 2, 3, 4, nil, 6, nil, 8, 9]
-let nonOptionalNums = optionalNums.compactMap { $0 }
-
-print(nonOptionalNums) // only non optional values are returned.
-
-// 7. forEach: iterate through a collection. Similiar to for item in items { block of code }
-var sum: Int = 0
-randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
-
 /*
     MARK: 2. Closures
        Closures are unnamed/anonymous functions. Those functions can be passed as a function argument or assign it to variables. Closures are flexible and poweful functions which enable flexible operations in swift code. It is commonly used when synchronous operations are done in Swift for multi-threading and api calls. It is used as a call back function.
@@ -252,3 +188,66 @@ func timer(completion: @escaping () -> ()) {
 timer {
     print("timer called after completion")
 }
+
+/*
+    MARK: 3. Higther Order Functions
+    Higher order functions take a collection. The caller can use a custom function (closure) to various operations such as:
+    1) map
+    2) filter
+    3) reduce
+    4) sort
+    5) flatMap
+    6) compactMap
+    7) forEach
+
+ */
+
+// 1. map: takes a collection and return a collection
+var randomNums: [Int] = []
+for i in 0..<100 {
+    // add random num
+    randomNums.append(Int.random(in: 1..<100))
+}
+
+let randomNumsPlusOne = randomNums.map { $0 + 1 } // add 1 to every number from randomNums and assign the return value to a constant.
+print(randomNumsPlusOne)
+
+// 2. Filter: filters a collection for the condition specified inside a closure.
+let numsOver50 = randomNums.filter { $0 > 50 } // filter numbers that are greater than 50
+print(numsOver50)
+
+// 3. Reduce: reduce function temporarily stores a value and applies the specified operation for each element.
+let sumOfRandomNums = randomNums.reduce(0, +)
+// equivalent but set the initial value to 100
+let sumOfRandomNums2 = randomNums.reduce(100) { partialResult, num in
+    partialResult + num
+}
+print(sumOfRandomNums)
+print(sumOfRandomNums2) // 100 greater than sumOfRandomNums
+
+// 4. Sort
+let randomNumsSortAsc = randomNums.sorted(by: { $0 < $1 })
+let randomNumsSortDesc = randomNums.sorted(by: { $0 > $1 })
+
+print(randomNumsSortAsc)
+print(randomNumsSortDesc)
+
+// 5. FlatMap
+let nums: [[Int]] = [[1,2,3], [4,5,6]]
+let flatNums = nums.flatMap { $0.count } // instead of returning all numbers, return count for individual array inside the multi dimensional array.
+print(flatNums)
+
+let wordList: [String] = ["Hello", "World"]
+let flattenedWordListLower: [Character] = wordList.flatMap { $0.lowercased() } // converts a String array into a Character array. During the operation all the cases are lowered.
+
+print(flattenedWordListLower)
+
+// 6. CompactMap: used to remove all nils inside a collection.
+let optionalNums: [Int?] = [1, 2, 3, 4, nil, 6, nil, 8, 9]
+let nonOptionalNums = optionalNums.compactMap { $0 }
+
+print(nonOptionalNums) // only non optional values are returned.
+
+// 7. forEach: iterate through a collection. Similiar to for item in items { block of code }
+var sum: Int = 0
+randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
