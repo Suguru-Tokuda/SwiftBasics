@@ -833,3 +833,31 @@ let i1: Int = 5
 let result = i1.square()
 print("Square - \(i1) is \(result)")
 ```
+
+## Properties and Different Types and Uses
+
+### Stored Properties
+
+<br>
+Stored propeties are stored in the memory for class, struct, and enum.
+
+```
+protocol WildAnimal {
+    var runningSpeedInMiles: Int { get set }
+}
+```
+
+### Computed Properties
+
+<br>
+Computed properties are similar to functions. The code inside the block gets executed everytime the proerty gets accessed.
+
+```
+extension WildAnimal {
+    // Computed property: gets executed every time it gets called
+    var walkingSpeedInMiles: Int {
+        print("Computed property")
+        return runningSpeedInMiles / 2
+    }
+}
+```

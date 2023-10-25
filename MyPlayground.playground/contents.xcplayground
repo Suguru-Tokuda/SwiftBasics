@@ -18,5 +18,7 @@
         <page name='Types'/>
         <page name='Generics'/>
         <page name='Assignment4'/>
+        <page name='Closures'/>
+        <page name='HigherOrderFunction'/>
     </pages>
 </playground>

@@ -84,7 +84,7 @@ enum VehicalPrices {
     case highEnd(price: Int)
     case lowEnd(price: Int)
     case midEnd(type: String)
-    case noPricing
+    case noPricing(price: Int, type: String)
 }
 
 func getVehicalPrices(range: VehicalPrices) {
@@ -99,6 +99,9 @@ func getVehicalPrices(range: VehicalPrices) {
         }
     case .midEnd(type: let type):
         print("Car type is \(type)")
+    case .noPricing(price: let price, type: let type):
+        print("\(type) and the price is \(price)")
+        break
     default:
         print("default")
     }
@@ -107,7 +110,7 @@ func getVehicalPrices(range: VehicalPrices) {
 getVehicalPrices(range: .highEnd(price: 1200))
 getVehicalPrices(range: .lowEnd(price: 400))
 getVehicalPrices(range: .midEnd(type: "Civic Type R"))
-getVehicalPrices(range: .noPricing)
+//getVehicalPrices(range: .noPricing)
 
 enum NetworkError {
     case ResponseError(_ code: Int)
