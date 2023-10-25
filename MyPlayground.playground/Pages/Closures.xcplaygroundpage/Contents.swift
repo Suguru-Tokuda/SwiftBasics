@@ -89,20 +89,3 @@ func travelToDestination(action: () -> ()) {
 travelToDestination {
     
 }
-
-func rotate(_ matrix: inout [[Int]]) {
-    var retVal: [[Int]] = []
-    var length = matrix.count
-
-    for i in 0..<length {
-        var tmpNums: [Int] = []
-
-        for j in stride(from: length - 1, through: 0, by: -1) {
-            tmpNums.append(matrix[i][j])
-        }
-
-        retVal.append(tmpNums)
-    }
-
-    matrix = retVal
-}

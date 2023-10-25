@@ -20,5 +20,6 @@
         <page name='Assignment4'/>
         <page name='Closures'/>
         <page name='HigherOrderFunction'/>
+        <page name='Assignment5'/>
     </pages>
 </playground>
