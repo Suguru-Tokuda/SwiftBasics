@@ -252,7 +252,7 @@ print(nonOptionalNums) // only non optional values are returned.
 var sum: Int = 0
 randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
 
-// 8 . zip: combine two arrays
+// 8 . zip: combine two arrays into tuples
 let petOwners = ["Mike", "Sarah", "Kat"]
 let pets = ["Leo", "Tiger", "Mao"]
 
