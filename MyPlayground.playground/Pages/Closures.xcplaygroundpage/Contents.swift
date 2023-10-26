@@ -36,7 +36,12 @@ doSquare(n1: 25, completion: { output in
     print("doSquare - \(output)")
 })
 
-// 1. Non Escaping Closures
+// 1. Non Escaping Closures - doesn't escape from another scope
+let nonEscapingClosure = {
+    print("non escaping")
+}
+
+nonEscapingClosure()
 
 // 2. Escaping closures
 func performApiCallTask(completion: @escaping () -> ()) {

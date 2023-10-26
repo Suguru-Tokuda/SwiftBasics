@@ -254,7 +254,7 @@ randomNums.forEach { sum += $0 } // can be used in different sinarios by looping
 
 // 8 . zip: combine two arrays into tuples
 let petOwners = ["Mike", "Sarah", "Kat"]
-let pets = ["Leo", "Tiger", "Mao"]
+let pets = ["Leo", "Tiger", "Mao", "Hello"]
 
 for (owner, pet) in zip(petOwners, pets) {
     print("\(owner) owns \(pet)")

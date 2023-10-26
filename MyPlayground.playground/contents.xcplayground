@@ -21,5 +21,8 @@
         <page name='Closures'/>
         <page name='HigherOrderFunction'/>
         <page name='Assignment5'/>
+        <page name='ErrorHandling'/>
+        <page name='AccessSpecifiers'/>
+        <page name='DependencyInjections'/>
     </pages>
 </playground>
