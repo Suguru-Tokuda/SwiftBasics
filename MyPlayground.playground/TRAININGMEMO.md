@@ -27,11 +27,11 @@ fullName = "Tokuda, Suguru" // Not allowed
 
 Swift supports various data types. Examples of data types are:
 
-- String
-- Character
-- Int
-- Float
-- Double
+- `String`
+- `Character`
+- `Int`
+- `Float`
+- `Double`
 
 ### Type inferencing
 
@@ -756,7 +756,7 @@ struct Car : Driveable {
         print("Applying breaks")
     }
 
-    // no need to implement because default implementation is created.
+// no need to implement because default implementation is created.
 //    func stearing(direction: String) {
 //        print("stearing the Car in \(direction)")
 //    }
@@ -861,3 +861,359 @@ extension WildAnimal {
     }
 }
 ```
+
+## Generics
+
+Generics enables to write flexible and reusable code and avoid duplication of code. Since Swift does not support function overloading, using Generics is a good solution to write DRY code.
+
+```
+func multiplyNumbers<T: Numeric>(num1 : T, num2: T) -> T {
+    let res = num1 * num2
+    print("Generics res = \(res)")
+    return res
+}
+
+multiplyNumbers(num1: 2, num2: 3)
+multiplyNumbers(num1: 2.5, num2: 2)
+```
+
+Generic can also be used for classes, structs, and enums. The advantage of Generics in any data types is to make the code reusable.
+
+### Generic with Class
+
+```
+class Housing {
+    var numberOfBedrooms: Int
+
+    init(numberOfBedrooms: Int) {
+        self.numberOfBedrooms = numberOfBedrooms
+    }
+}
+
+class House : Housing {
+    var houseName: String
+
+    init(houseName: String, numberOfBedRooms: Int) {
+        self.houseName = houseName
+        super.init(numberOfBedrooms: numberOfBedRooms)
+    }
+}
+
+class Apartment : Housing {
+    var apartmentName: String
+
+    init(apartmentName: String, numberOfBedrooms: Int) {
+        self.apartmentName = apartmentName
+        super.init(numberOfBedrooms: numberOfBedrooms)
+    }
+}
+
+class PersonClassForAss5<T> {
+    var firstName: String
+    var lastName: String
+    var property: T
+
+    init(firstName: String, lastName: String, property: T) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.property = property
+    }
+}
+
+let personWithHouse = PersonClassForAss5(firstName: "Suguru", lastName: "Tokuda", property: House(houseName: "House", numberOfBedRooms: 5))
+let personWithApartment = PersonClassForAss5(firstName: "Suguru 2", lastName: "Tokuda 2", property: Apartment(apartmentName: "Apartment", numberOfBedrooms: 2))
+```
+
+### Generic with Stack
+
+```
+struct Stack<T> {
+    var stack: [T] = []
+    var count: Int = 0 // used to track the length of the stack
+
+    // add a new element to the stack at the end of the array
+    // then increment the count by 1
+    mutating func add(_ element: T) {
+        stack.append(element) // add to the array
+        count += 1
+    }
+
+    // Removes the last element and return it if exists.
+    // If doesn't exist then it returns nil.
+    mutating func pop() -> T? {
+        if let retVal = stack.last {
+            count -= 1
+            return retVal
+        } else {
+            return nil
+        }
+    }
+}
+
+var stack = Stack<Int>()
+
+stack.add(1)
+stack.add(2)
+stack.add(3)
+
+print("After adding elements in the stack: \(stack.stack)")
+
+if let removed = stack.pop() {
+    print("\(removed) was removed")
+}
+
+print("After removal: \(stack.stack)")
+```
+
+### Generic with enum
+
+```
+enum GenericEnum<T> {
+    case one(val: T),
+         two(val: T),
+         three(val: T)
+
+    func getValue() -> T {
+        switch self {
+        case .one(val: let val):
+            return val
+        case .two(val: let val):
+            return val
+        case .three(val: let val):
+            return val
+        }
+    }
+}
+
+var one = GenericEnum<String>.one(val: "one")
+print(one.getValue())
+```
+
+## Closures
+
+Closures are unnamed/anonymous functions. Those functions can be passed as a function argument or assign it to variables. Closures are flexible and poweful functions which enable flexible operations in swift code. It is commonly used when synchronous operations are done in Swift for multi-threading and api calls. It is used as a call back function.
+
+There are 4 types of closures in Swift:
+
+1. Non escaping closures
+2. Escaping closures
+3. Trailing closures
+4. Auto closures
+
+`Non Escaping Closue`: simply assining a block (anonymous function) to a variable.
+
+```
+let nonEscapingClosure = {
+    print("I'm not escaping...")
+}
+```
+
+Print "I'm not escaping..."
+
+```
+nonEscapingClosure()
+```
+
+`Escaping closure`: escaping closure takes an argument. The calling function can contain any logic with the return value.
+
+```
+func escapingClosure(val: Int, complesion: (Int) -> (), isEscaping: Bool) {
+    if isEscaping && val > 5 {
+        complesion(val)
+    }
+}
+```
+
+The closure gets called because isEscaping is true
+
+```
+escapingClosure(val: 6, complesion: { val in
+    print(val)
+}, isEscaping: true)
+```
+
+The closure never gets called
+
+```
+escapingClosure(val: 4, complesion: { val in
+    print(val) // never gets executed
+}, isEscaping: false)
+```
+
+`Trailig closure`: the closure that is at the end of the function parameter
+
+```
+func trailingClosure(val: String, _ completion: (String) -> Void) {
+    print(val)
+}
+```
+
+Calling a closure func with short hand.
+
+```
+trailingClosure(val: "This is an example of a trailing closure") { print($0) }
+```
+
+`Auto Closure`: a type of closure without any paramter. Used as a call back.
+
+```
+func onBtnClick(action: () -> ()) {
+action()
+}
+
+onBtnClick {
+print("Btn clicked!")
+}
+```
+
+@escaping
+@escaping needs to be added before the closure if the function contains synchronous code.
+
+```
+func timer(completion: @escaping () -> ()) {
+print("Got into the sleep func")
+
+    DispatchQueue.global(qos: .background).async {
+        print("Background thread!")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            print("Back to main after 5 seconds!")
+            completion()
+        }
+    }
+}
+
+timer {
+    print("timer called after completion")
+}
+```
+
+## Higher Order Functions
+
+Higher order functions take a collection. The caller can use a custom function (closure) to various operations such as:
+
+1. `map`: takes a collection and return a collection
+
+```
+var randomNums: [Int] = []
+for i in 0..<100 {
+    // add random num
+    randomNums.append(Int.random(in: 1..<100))
+}
+
+let randomNumsPlusOne = randomNums.map { $0 + 1 } // add 1 to every number from randomNums and assign the return value to a constant.
+print(randomNumsPlusOne)
+```
+
+2. `filter`: filters a collection for the condition specified inside a closure.
+
+```
+let numsOver50 = randomNums.filter { $0 > 50 } // filter numbers that are greater than 50
+print(numsOver50)
+```
+
+3. `reduce`: reduce function temporarily stores a value and applies the specified operation for each element.
+
+```
+let sumOfRandomNums = randomNums.reduce(0, +)
+// equivalent but set the initial value to 100
+let sumOfRandomNums2 = randomNums.reduce(100) { partialResult, num in
+    partialResult + num
+}
+print(sumOfRandomNums)
+print(sumOfRandomNums2) // 100 greater than sumOfRandomNums
+```
+
+4. `sort`
+
+```
+let randomNumsSortAsc = randomNums.sorted(by: { $0 < $1 })
+let randomNumsSortDesc = randomNums.sorted(by: { $0 > $1 })
+
+print(randomNumsSortAsc)
+print(randomNumsSortDesc)
+```
+
+5. `flatMap`
+
+```
+let nums: [[Int]] = [[1,2,3], [4,5,6]]
+let flatNums = nums.flatMap { $0.count } // instead of returning all numbers, return count for individual array inside the multi dimensional array.
+print(flatNums)
+
+let wordList: [String] = ["Hello", "World"]
+let flattenedWordListLower: [Character] = wordList.flatMap { $0.lowercased() } // converts a String array into a Character array. During the operation all the cases are lowered.
+
+print(flattenedWordListLower)
+```
+
+6. `compactMap`: used to remove all nils inside a collection.
+
+```
+let optionalNums: [Int?] = [1, 2, 3, 4, nil, 6, nil, 8, 9]
+let nonOptionalNums = optionalNums.compactMap { $0 }
+
+print(nonOptionalNums) // only non optional values are returned.
+```
+
+7. `forEach`: iterate through a collection. Similiar to for item in items { block of code }
+
+```
+var sum: Int = 0
+randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
+```
+
+8. `zip`: combine two arrays into tuples
+
+```
+let petOwners = ["Mike", "Sarah", "Kat"]
+let pets = ["Leo", "Tiger", "Mao", "Hello"]
+
+for (owner, pet) in zip(petOwners, pets) {
+    print("\(owner) owns \(pet)")
+}
+```
+
+## Dependency Injection
+
+DI is a technique in software development to let one module/class/struct (scope) use the code that comes from another scope. In Swift, there are 3 types of dependency injection techniques.
+
+1. Constructor Injection
+   In class or struct, there is an uninitialized dependency. Passing a new object (as a dependency) into a constructor lets the class/struct use the dependency for their operations. This is the best practice for DI in Swift because the rest of the code does not have to worry about not having the dependency. Downside of this DI is that it takes extra memory even if the operation might not need the dependency.
+
+2. Property Injection
+   A kind of DI used with a property. Unlike a constructor injection, a class or struct would have an optional property and the DI takes place after the initializer is called. Down side of this technique is that the depdency could be nil and not available.
+
+3. Method Injection
+   DI technique used as a function parameter. This is recommended if the operation can be done without a dependency. For example, a class or struct can have multiple functions (func A, B, C, etc). If only func A requires the dependency, then the function caller should pass the dependency into the func A. This is good for memory saving, however, it requires dependency checking and takes extra work to manage the code.
+
+## Error Handling
+
+Error handlign in Swift starts with creating an enum which confirms to Error protol. After creating an custom error enum, the rest of the code in the project should handle errors property. There are 3 types of error handling methdos in Swift.
+
+1. do { try \_\_\_ } catch {}
+   The best way to handle errors in swift, becuase every error can be handled in the catch clause
+
+```
+do {
+    try // function call
+} catch let error {
+    // handle here
+}
+```
+
+2. try?
+   Second best way to handle error throwing functions in Swift. The program still runs without handling an error. With try? the function call gets ignored if there is an error and proceeds the rest of the code. The downside is that an error is not handled, it just gets ignored.
+
+3. try!
+   Should not be used at all in the real projects, because it is equivalent of force unwrap for optional. The application can crash when an error happens.
+
+## Access Modifiers
+
+1. Internal - (Default) Anything which is defined in the same module is accessible.
+2. Private - the most restricted specifier. In this declarations are accessible only within the defined class or struct.
+3. FilePrivate - private only within the file. Second most restricted specifier.
+4. Public - can be accessed from anywhere within the project (regardelss the directory structure).
+5. Open - similar to public, however, you can subclass (inherit) anywhere.
+
+As a standard practice, internal & private should be used. Using public & open is not recommended in real life projects.
