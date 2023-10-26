@@ -199,7 +199,7 @@ timer {
     5) flatMap
     6) compactMap
     7) forEach
-
+    8) zip
  */
 
 // 1. map: takes a collection and return a collection
@@ -251,3 +251,11 @@ print(nonOptionalNums) // only non optional values are returned.
 // 7. forEach: iterate through a collection. Similiar to for item in items { block of code }
 var sum: Int = 0
 randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
+
+// 8 . zip: combine two arrays
+let petOwners = ["Mike", "Sarah", "Kat"]
+let pets = ["Leo", "Tiger", "Mao"]
+
+for (owner, pet) in zip(petOwners, pets) {
+    print("\(owner) owns \(pet)")
+}
