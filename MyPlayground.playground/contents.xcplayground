@@ -26,5 +26,6 @@
         <page name='DependencyInjections'/>
         <page name='MemoryManagement'/>
         <page name='Concurrencny'/>
+        <page name='Assignment7'/>
     </pages>
 </playground>

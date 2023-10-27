@@ -21,7 +21,7 @@ import Foundation
 class Person {
     var name: String // strong reference: ARC will work on collecting unused references and clears.
     var age: Int? // strong
-    weak var car: Car? // weak reference
+    unowned var car: Car? // weak reference
     
     init(name: String, age: Int) {
         self.name = name
@@ -95,10 +95,9 @@ person?.car = car
 car?.owner = person
 
 // deinit is not called in Person and Car class because Person and Car class have strong reference to each other.
-car = nil
-person = nil
 
-print(person?.car?.getType())
+car = nil
+//person = nil
 
 print(person)
 print(car)

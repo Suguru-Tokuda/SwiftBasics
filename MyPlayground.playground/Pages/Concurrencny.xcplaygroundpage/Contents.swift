@@ -45,35 +45,41 @@ queue1.async {
 
 // task a has to complete before b can start
 queue1.async {
-    print("b Task")
+    print("b Task started")
+    for i in 0..<100 {
+        if i % 2 == 0 {
+            print(i)
+        }
+    }
+    print("b Task ended")
 }
 
 queue1.async {
     print("c task")
 }
 
-let concurrentQueue = DispatchQueue(label: "concurrentQueue123", attributes: .concurrent)
-
-concurrentQueue.async {
-    for i in 0...150 {
-        print("a - \(i)")
-    }
-    
-    print("a Task")
-}
-
-concurrentQueue.async {
-    print("b Task")
-}
-
-concurrentQueue.async {
-    for i in 0...10 {
-        print("c - \(i)")
-    }
-    print("c Task")
-}
-
-// 3. Global Queue
-DispatchQueue.global(qos: .background).async {
-    print("Background thread")
-}
+//let concurrentQueue = DispatchQueue(label: "concurrentQueue123", attributes: .concurrent)
+//
+//concurrentQueue.async {
+//    for i in 0...150 {
+//        print("a - \(i)")
+//    }
+//    
+//    print("a Task")
+//}
+//
+//concurrentQueue.async {
+//    print("b Task")
+//}
+//
+//concurrentQueue.async {
+//    for i in 0...10 {
+//        print("c - \(i)")
+//    }
+//    print("c Task")
+//}
+//
+//// 3. Global Queue
+//DispatchQueue.global(qos: .background).async {
+//    print("Background thread")
+//}
