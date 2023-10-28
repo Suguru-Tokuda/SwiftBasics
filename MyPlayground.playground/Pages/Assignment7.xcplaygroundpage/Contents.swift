@@ -86,7 +86,7 @@ vehicleBreak?.car = civic
 civic?.engine = engine
 civic?.vehicleBreak = vehicleBreak
 
-// MARK: Reain Cycle Issue
+// MARK: Retain Cycle Issue
 // After assining nil to car, deinit function is called for the Car class
 // deinit for Engine and VehicleBreak classes are not called, because
 // refrences for engine and vehicleBreak are still remained in the counter.
