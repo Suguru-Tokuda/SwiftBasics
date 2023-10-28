@@ -175,8 +175,8 @@ compass?.vehicleBreak = Break(breakingPower: 60) // Instance will be immediately
  THE FOLLOWING CODE CLASHES:
  Fatal error: Attempted to read an unowned reference but object 0x600000214e60 was already deallocated
  */
-compass?.engine?.car = compass
-compass?.vehicleBreak?.car = compass
+//compass?.engine?.car = compass
+//compass?.vehicleBreak?.car = compass
 
 print("unowned reference 2:")
 compass?.engine = nil
