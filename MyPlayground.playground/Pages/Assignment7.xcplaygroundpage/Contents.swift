@@ -140,29 +140,48 @@ class SUV : Vehicle {
     
     deinit {
         print("\(type(of: self)) deinit")
-        self.engine = nil
-        self.vehicleBreak = nil
+        // the following code should never be called inside SUV class???
+//        self.engine = nil
+//        self.vehicleBreak = nil
     }
 }
 
+// by creating a reference for compassEngine and compassBreak
 var compass: SUV? = SUV(make: "Jeep", model: "Compass", year: 2023)
 var compassEngine: Engine? = Engine(hoursePower: 300)
 var compassBreak: Break? = Break(breakingPower: 60)
 
-compass?.engine = compassEngine
-compass?.vehicleBreak = compassBreak
+compass?.engine = Engine(hoursePower: 300)
+compass?.vehicleBreak = Break(breakingPower: 60)
 
 compassEngine?.car = compass
 compassBreak?.car = compass
 
 print("unowned reference:")
-//compass?.engine = nil
-//compass?.vehicleBreak = nil
+compass?.engine = nil
+compass?.vehicleBreak = nil
 
 compassEngine = nil
 compassBreak = nil
 // the following code crahses, because, SUV has Engine and Break as unowned. When compass gets destroyed, the reference inside SUV class will be set to nil. Unowned references cannot be nil
-//compass = nil
+compass = nil
+
+// without declaring variables. Directly assign values to class properties.
+compass = SUV(make: "Jeep", model: "Compass", year: 2023)
+compass?.engine = Engine(hoursePower: 300) // Instance will be immediately deallocated because property 'engine' is 'unowned'
+compass?.vehicleBreak = Break(breakingPower: 60) // Instance will be immediately deallocated because property 'vehicleBreak' is 'unowned'
+
+/*
+ THE FOLLOWING CODE CLASHES:
+ Fatal error: Attempted to read an unowned reference but object 0x600000214e60 was already deallocated
+ */
+compass?.engine?.car = compass
+compass?.vehicleBreak?.car = compass
+
+print("unowned reference 2:")
+compass?.engine = nil
+compass?.vehicleBreak = nil
+compass = nil
 
 /*
     MARK: Concurrency / Multi Threading
