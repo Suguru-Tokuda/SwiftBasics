@@ -72,3 +72,84 @@ operationQueue.addOperations([downloadSong, playSong], waitUntilFinished: false)
 
 let operationQueue2 = OperationQueue()
 operationQueue2.addOperations([downloadSong2], waitUntilFinished: true)
+
+/*
+    MARK: Async Await
+    Available from iOS 13. The calling function needs to have async keyword. To call async functions, the function call needs to be inside Task {} and await keyword is required.
+ */
+
+// mocking an api call with a closure
+func fakeApiCall(_ completion: @escaping ([String]) -> Void) {
+    let retVal: [String] = ["Michelle", "Doug", "Chris"]
+    
+    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1) {
+        completion(retVal)
+    }
+}
+
+// Creating a async function.
+// Inside the function, call withCheckedContinuation.
+func fetchAccountData() async -> [String] {
+    return await withCheckedContinuation { continuation  in
+        fakeApiCall { val in
+            continuation.resume(returning: val)
+        }
+    }
+}
+
+// Demo for async await
+Task {
+    let accounts = await fetchAccountData()
+    print(accounts)
+}
+
+/*
+    MARK: Actors
+    Actor is similar to class; reference type, can have properties and functions, however, actors do not support inheritance. The biggest difference between classes and actors are that properties in an actor is thread safe. Only one thread can access/modify the property at the same time. This helps to implement thread safe application. If you want to do the same thing with class, you need to use serial queue so that the property is thread safe.
+ */
+
+actor AccountInfo {
+    private var isLoggedIn: Bool = false
+    
+    init() {}
+    
+    init(isLoggedIn: Bool) {
+        self.isLoggedIn = isLoggedIn
+    }
+    
+    func getLogInStatus() -> Bool {
+        return isLoggedIn
+    }
+    
+    func logIn(email: String, password: String) -> Bool {
+        if email.lowercased() == "email" && password == "password" {
+            isLoggedIn = true
+        } else{
+            isLoggedIn = false
+        }
+        
+        return isLoggedIn
+    }
+    
+    func logout() -> Bool {
+        if isLoggedIn == true {
+            isLoggedIn = false
+            
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+let myAccountInfo = AccountInfo()
+
+// Test actor functions.
+Task {
+    let wasAbleToLogin = await myAccountInfo.logIn(email: "email", password: "password")
+    print("Was able to login: \(wasAbleToLogin)")
+    let logInStatus = await myAccountInfo.getLogInStatus()
+    print("Log in status: \(logInStatus)")
+    let logOutStatus = await myAccountInfo.logout()
+    print("Logged out: \(logOutStatus)")
+}
