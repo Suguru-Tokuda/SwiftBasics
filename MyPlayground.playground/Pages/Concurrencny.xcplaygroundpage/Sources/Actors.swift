@@ -20,12 +20,14 @@ actor BankDetails {
         self.balance = balance
     }
 
-    func deposit(amount: Double) {
-        
+    func deposit(amt: Double) {
+        balance += amt
+        print("deposited: \(amt) balance is \(balance)")
     }
     
     func withDrawAmt(amt: Double) {
-        
+        balance -= amt
+        print("withDraw: \(amt)")
     }
 }
 
@@ -35,4 +37,10 @@ actor BankDetails {
 
 func actors() {
     let bankDetails = BankDetails(balance: 0.0)
+    
+    Task {
+        await bankDetails.deposit(amt: 100)
+        await bankDetails.withDrawAmt(amt: 50)
+        await bankDetails.deposit(amt: 200)
+    }
 }
