@@ -26,38 +26,38 @@ import Foundation
 
 // Main Queue - Main Thread
 //let isMainThread = true
-
-DispatchQueue.main.async {
-    print("Main thread a")
-}
-
-DispatchQueue.main.async {
-    print("Main thread b")
-}
-
-// 2. Serial Queue / Custom Queue
-let queue1 = DispatchQueue(label: "queue1")
-
-queue1.async {
-    print(Thread.current)
-    print("a Task")
-}
-
-// task a has to complete before b can start
-queue1.async {
-    print("b Task started")
-    for i in 0..<100 {
-        if i % 2 == 0 {
-            print(i)
-        }
-    }
-    print("b Task ended")
-}
-
-queue1.async {
-    print("c task")
-}
-
+//
+//DispatchQueue.main.async {
+//    print("Main thread a")
+//}
+//
+//DispatchQueue.main.async {
+//    print("Main thread b")
+//}
+//
+//// 2. Serial Queue / Custom Queue
+//let queue1 = DispatchQueue(label: "queue1")
+//
+//queue1.async {
+//    print(Thread.current)
+//    print("a Task")
+//}
+//
+//// task a has to complete before b can start
+//queue1.async {
+//    print("b Task started")
+//    for i in 0..<100 {
+//        if i % 2 == 0 {
+//            print(i)
+//        }
+//    }
+//    print("b Task ended")
+//}
+//
+//queue1.async {
+//    print("c task")
+//}
+//
 //let concurrentQueue = DispatchQueue(label: "concurrentQueue123", attributes: .concurrent)
 //
 //concurrentQueue.async {
@@ -79,7 +79,34 @@ queue1.async {
 //    print("c Task")
 //}
 //
-//// 3. Global Queue
+//// sync makes sure to finish even it's concurrent. No need to use sync if the que is serial.
+//concurrentQueue.sync {
+//    for i in 0...150 {
+//    }
+//    
+//    print("a Task")
+//}
+//
+//concurrentQueue.sync {
+//    print("b Task")
+//}
+//
+//concurrentQueue.sync {
+//    for i in 0...10 {
+//    }
+//    print("c Task")
+//}
+//
+//
+//
+//// 3. Global Queue - system provided queues, and are ALWAYS concurrent
+//// Priority of this queue is decided by factor called as QOS - Quality of Service
 //DispatchQueue.global(qos: .background).async {
 //    print("Background thread")
 //}
+//
+//DispatchQueue.global(qos: .userInteractive).async {
+//    print("userInteractive")
+//}
+
+main()

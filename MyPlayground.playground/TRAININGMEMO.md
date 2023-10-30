@@ -1344,9 +1344,81 @@ car = nil
 person = nil
 ```
 
+Prep code for references
+
+```
+class Vehicle {
+    var make: String
+    var model: String
+    var year: Int
+
+    init(make: String, model: String, year: Int) {
+        self.make = make
+        self.model = model
+        self.year = year
+    }
+}
+
+class Engine {
+    var hoursePower: Int
+    var car: Vehicle?
+
+    init(hoursePower: Int) {
+        self.hoursePower = hoursePower
+    }
+
+    deinit {
+        print("\(type(of: self)) deinit")
+    }
+}
+
+class Break {
+    var breakingPower: Int
+    var car: Vehicle?
+
+    init(breakingPower: Int) {
+        self.breakingPower = breakingPower
+    }
+
+    deinit {
+        print("\(type(of: self)) deinit")
+    }
+}
+```
+
 ### strong reference
 
 The default reference type to keep objects alive as long as they are being used.
+
+```
+class HatchBack : Vehicle {
+    var engine: Engine?
+    var vehicleBreak: Break?
+
+    override init(make: String, model: String, year: Int) {
+        super.init(make: make, model: model, year: year)
+    }
+
+    deinit {
+        print("\(type(of: self)) deinit")
+        self.engine = nil
+        self.vehicleBreak = nil
+    }
+}
+```
+
+```
+var engine: Engine? = Engine(hoursePower: 250)
+var vehicleBreak: Break? = Break(breakingPower: 50)
+
+var civic: HatchBack? = HatchBack(make: "Honda", model: "Civic Type R", year: 2023)
+
+engine?.car = civic
+vehicleBreak?.car = civic
+
+civic?.engine = engine
+civic?.vehicleBreak = vehicleBreak
+```
 
 ### weak reference
 

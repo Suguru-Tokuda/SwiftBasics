@@ -39,13 +39,6 @@ class Engine {
     }
 }
 
-// referenceCount: 0
-var engine1: Engine? = Engine(hoursePower: 200) // increasing the count to 1
-var engine2 = engine1 // increasing the count to 2
-
-engine1 = nil // decreasing the count to 1
-engine2 = nil // decreasing the count to 0
-
 class Break {
     var breakingPower: Int
     var car: Vehicle?
@@ -58,6 +51,13 @@ class Break {
         print("\(type(of: self)) deinit")
     }
 }
+
+// referenceCount: 0
+var engine1: Engine? = Engine(hoursePower: 200) // increasing the count to 1
+var engine2 = engine1 // increasing the count to 2
+
+engine1 = nil // decreasing the count to 1
+engine2 = nil // decreasing the count to 0
 
 class HatchBack : Vehicle {
     var engine: Engine?
@@ -110,20 +110,20 @@ class Sedan : Vehicle {
     }
 }
 
-var focus: Sedan? = Sedan(make: "Ford", model: "Fusion", year: 2010)
-var focusEngine: Engine? = Engine(hoursePower: 280)
-var focusBreak: Break? = Break(breakingPower: 30)
+var fusion: Sedan? = Sedan(make: "Ford", model: "Fusion", year: 2010)
+var fusionEngine: Engine? = Engine(hoursePower: 280)
+var fusionBreak: Break? = Break(breakingPower: 30)
 
-focus?.engine = focusEngine
-focus?.vehicleBreak = focusBreak
+fusion?.engine = fusionEngine
+fusion?.vehicleBreak = fusionBreak
 
-engine?.car = focus
-focusBreak?.car = focus
+engine?.car = fusion
+fusionBreak?.car = fusion
 // Sedan, Engine, and Break objects are destroyed even though they are referencing each other.
 print("Weak reference:")
-focus = nil
-focusEngine = nil
-focusBreak = nil
+fusion = nil
+fusionEngine = nil
+fusionBreak = nil
 
 /*
  MARK: 3. unowned reference
@@ -158,13 +158,13 @@ compassEngine?.car = compass
 compassBreak?.car = compass
 
 print("unowned reference:")
-compass?.engine = nil
-compass?.vehicleBreak = nil
-
-compassEngine = nil
-compassBreak = nil
-// the following code crahses, because, SUV has Engine and Break as unowned. When compass gets destroyed, the reference inside SUV class will be set to nil. Unowned references cannot be nil
-compass = nil
+////compass?.engine = nil
+////compass?.vehicleBreak = nil
+//
+//compassEngine = nil
+//compassBreak = nil
+//// the following code crahses, because, SUV has Engine and Break as unowned. When compass gets destroyed, the reference inside SUV class will be set to nil. Unowned references cannot be nil
+//compass = nil
 
 // without declaring variables. Directly assign values to class properties.
 compass = SUV(make: "Jeep", model: "Compass", year: 2023)
@@ -281,3 +281,4 @@ concurrentQueue.async {
     }
     print("Concurrent Task C finished")
 }
+
