@@ -11,6 +11,15 @@ import Foundation
  5. ThirdParty Frameworks - Combine, RXSwift
  6. Thread - (NSThread)NS - Namespace - lowest level api for threading/multitasking
  7. Semaphores
+ 
+ 
+ Question: call api in multi threading, what should I use?
+ 
+ Single task: GCD
+ Multiple tasks: operation queues because you can add dependencies.
+ Better than GCD and operation queues? => async await
+ To make everything complicated into simple code => async let
+ 
  */
 
 /*
