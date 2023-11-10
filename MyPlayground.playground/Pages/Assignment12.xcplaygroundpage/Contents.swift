@@ -2,8 +2,6 @@
 
 import Foundation
 
-var greeting = "Hello, playground"
-
 /**
     Assignment 12
     Suguru Tokuda
@@ -14,7 +12,6 @@ var greeting = "Hello, playground"
     MARK: Async let
     Async let can be used to wait for one or multiple procsses to be completed before the rest of code executions.
  */
-
 func wait(seconds: Int) async -> Bool {
     do {
         try await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
@@ -73,3 +70,8 @@ wait {
     waitGroup.leave()
 }
 
+
+
+var numDict: [Int : Int] = [:]
+
+numDict.first(where: { $0.value == 1 })?.key ?? 0

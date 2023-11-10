@@ -989,7 +989,7 @@ var one = GenericEnum<String>.one(val: "one")
 print(one.getValue())
 ```
 
-## Closures
+## Closures (Reference Type)
 
 Closures are unnamed/anonymous functions. Those functions can be passed as a function argument or assign it to variables. Closures are flexible and poweful functions which enable flexible operations in swift code. It is commonly used when synchronous operations are done in Swift for multi-threading and api calls. It is used as a call back function.
 
@@ -1284,6 +1284,12 @@ print(person2) // nil
 
 Retain Cycle Issue happens if two classes having strong reference to each other.
 
+In real life example for weak reference:
+
+1. API calls.
+2. Class delegate
+3. Constructor dependency injection
+
 ```
 class Person {
     var name: String // strong reference: ARC will work on collecting unused references and clears.
@@ -1437,3 +1443,148 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
 5.  ThirdParty Frameworks - Combine, RXSwift
 6.  Thread
 7.  Semaphores
+
+## UIKit Life Cycle
+
+1. Not running, unattached state
+2. Foreground
+3. Background
+4. Suspended: stops everything in the app.
+5. Terminated state
+
+Before iOS 13, there was only one scene, but from 13+ iOS supports multiple scenes.
+
+# SwiftUI
+
+## Difference between UIKit and SwiftUI
+
+### Protocol Oriented Programming
+
+In SwiftUI, views are structs. In UIKit, everything was declared as class (reference type).
+
+## Property Wrappers in SwiftUI
+
+1. @State
+2. @Binding
+3. @StateObject
+4. @ObservedObject
+5. ObservableObject
+6. @Environment
+7. @EnvironmentObject
+8. @Appstorage
+9. @Fetch
+
+### State
+
+Any simple data types - String, Int, Double, Bool
+Triggers the UI to refresh when value changes. Only the labels and texts that uses the property gets updated, not the whole UI.
+
+### Binding
+
+When you want to share data between 2 screens or with ChildViews.
+
+### StateObject
+
+Any object data types that confirm to ObservableObject protocol to tirgger UI updates.
+
+### ObservedObject
+
+Similar to StateObject. The difference is that ObservedObject recreates the whole UI. Apple recommends using StateObject.
+
+You do not instantiate an object inside the view for @ObservedObject classes, becuase an observed object is used to refresh the whole UI. If it gets instantiated inside the view, the object gets destroyed when the view(s) disappears. The object should live without the view.
+
+```
+@ObservedObject var vm: ObservedObjectClass
+```
+
+### ObserableObject (Protocol)
+
+A type of object with a publisher that emits before the object has changed. By default an ObservableObject synthesizes an objectWillChange publisher that emits the changed value before any of its @Published properties changes.
+
+### Environment
+
+Gets value from the OS. <a src="https://developer.apple.com/documentation/swiftui/environmentvalues/">Full List</a>
+
+```
+@Environment(\.dismiss) var dismiss
+@Environment(\.colorScheme) var colorScheme
+@Environment(\.verticalSizeClass) var vSizeClass
+```
+
+### EnvironmentObject
+
+Object values passed into the child views. The value is available in nested views by making a reference to it.
+
+### AppStorage
+
+Light weight offline storage available in SwiftUI. Under the hood it uses userDefaults. Key Value pair dictionary. UserDefaults does not do real time data refresment until the next app launch. Do not store user sensitive data such as passwords (key chain is used for storing secure data). This is threadsafe.
+
+### Fetch - CoreData
+
+#### Expected questions
+
+1. How to share data within the app
+
+- EnvironmentObject
+- AppStorage
+- Binding
+
+## MVVM: Model View ViewModel
+
+Separating the view and business logic. MVC has View and Controller tightly coupled and the controller is not reused in different views. With MVVM, different views can reused ViewModel class.
+
+# Test Cases
+
+1. Unit Test Cases
+2. UITest Cases
+3. XCTest Cases
+
+## 1. Unit Test Cases
+
+Simple test cases uses XCTest framework. Simple logics in ViewModels or controller should be tested here. MVVM architecture makes it easier to run tests, because View and ViewModel (business logics) are separated. MVC makes it more difficult to test it because View and Controller (Mixture of View and Business logics) are tightly coupled.
+
+# Design Pattern
+
+## Singleton
+
+It ensures that a class can only have one instance. It provides global access to that instance. This can be achieved by making the constructor of the singleton class as private.
+
+1. Create singleton instance
+
+```
+static let shared = ClassName()
+```
+
+2. final class
+3. private initializer
+
+```
+import Foundation
+
+final class AuthManager {
+    static let shared = AuthManager()
+    var authToken: String = ""
+    var isLoggedIn = false
+
+    private init() {}
+
+    func doLogin(token: String) {
+        authToken = token
+        isLoggedIn = true
+    }
+
+    func doLogout() {
+        authToken = ""
+        isLoggedIn = false
+    }
+}
+
+```
+
+### Disadvantages of Singleton
+
+1. Testing makes it difficult because the object is shared.
+2. It consumes the memory.
+3. Properties are tightly.
+
+UserDefaults/AppStorage should be used to store simple data such as isLoggedIn. UserDefaults is thread safe.
