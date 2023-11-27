@@ -235,7 +235,7 @@ print(employees)
 
 ## Optional
 
-Optional type is defined by appending `?` after the data type or assining an optional value from the return type in function. The default value for optional types are `nil`. This is useful when a property does not need to have any value in the application.
+Optional type is defined by appending `?` after the data type or assining an optional value from the return type in function. The default value for optional types are `nil`. This is useful when a property does not need to have any value in the application. Under the hood, enum is an enum with .Some(Wrapped) and .None cases.
 
 ```
 // Assign a value after declaration
@@ -1176,7 +1176,7 @@ for (owner, pet) in zip(petOwners, pets) {
 
 ## Dependency Injection
 
-DI is a technique in software development to let one module/class/struct (scope) use the code that comes from another scope. In Swift, there are 3 types of dependency injection techniques.
+DI lets the code to be loosely coupled. DI is a technique in software development to let one module/class/struct (scope) use the code that comes from another scope. In Swift, there are 3 types of dependency injection techniques.
 
 1. Constructor Injection
    In class or struct, there is an uninitialized dependency. Passing a new object (as a dependency) into a constructor lets the class/struct use the dependency for their operations. This is the best practice for DI in Swift because the rest of the code does not have to worry about not having the dependency. Downside of this DI is that it takes extra memory even if the operation might not need the dependency.
@@ -1437,9 +1437,202 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
 ## Concurrency / Multi Threading
 
 1.  GCD - Grand Central Dispatch
+    <br>
+    <img src="Sources/Serial vs Concurrent Queue.png" width="600px">
+
+    ### Main Queue/Thread
+
+    ```
+    DispatchQueue.main.async {
+        print("Main thread a")
+    }
+
+    DispatchQueue.main.async {
+        print("Main thread b")
+    }
+    ```
+
+    ### Serial/Concurrent Queue
+
+    ```
+    let queue1 = DispatchQueue(label: "queue1")
+
+    queue1.async {
+        print(Thread.current)
+        print("a Task")
+    }
+
+    // task a has to complete before b can start
+    queue1.async {
+        print("b Task started")
+        for i in 0..<100 {
+            if i % 2 == 0 {
+                print(i)
+            }
+        }
+        print("b Task ended")
+    }
+
+    queue1.async {
+        print("c task")
+    }
+
+    let concurrentQueue = DispatchQueue(label: "concurrentQueue123", attributes: .concurrent)
+
+    concurrentQueue.async {
+        for i in 0...150 {
+            print("a - \(i)")
+        }
+
+        print("a Task")
+    }
+
+    concurrentQueue.async {
+        print("b Task")
+    }
+
+    concurrentQueue.async {
+        for i in 0...10 {
+            print("c - \(i)")
+        }
+        print("c Task")
+    }
+    ```
+
 2.  Operations and Operation Queues
+    <br>
+    Operation queues are built on top of GCD
+    it gives more control to user.
+    pause, resume, stop, start task
+    add or define dependencies within your task
+
+    ````
+    let taskLettuce = BlockOperation {
+    print("Adding Lettuce to Salad")
+    }
+        let taskTomato = BlockOperation {
+            print("Adding Tomato to Salad")
+        }
+
+        let taskOnion = BlockOperation {
+            print("Adding Onion to Salad")
+        }
+
+        let operationQueue = OperationQueue()
+
+        taskTomato.addDependency(taskOnion)
+        taskLettuce.addDependency(taskTomato)
+
+        operationQueue.addOperations([taskLettuce, taskTomato, taskOnion], waitUntilFinished: false)
+        operationQueue.maxConcurrentOperationCount = 1
+
+        operationQueue.cancelAllOperations()
+        _ = operationQueue.isSuspended
+        operationQueue.name = "My Operation Queue 1"
+
+        let operationQueue2 = OperationQueue()
+        operationQueue.name = "My Operation Queue 2"
+        ```
+    ````
+
 3.  SwiftConcurrency - Await Async
-4.  Actor
+    <br>
+    Introduced in 2019 - iOS 13
+
+    ```
+    func asyncAwait() {
+        Task {
+            let output = await task1()
+            // task 2 will start only after task1 finishes
+            await task2(num: output)
+            print("task2 finished")
+        }
+    }
+
+    func task1() async -> Int {
+        print("Task 1")
+        var res = 0
+        for _ in 0...(Int8.max / 4) { res += 1}
+        return res
+    }
+
+    func task2(num: Int) async {
+        print("Task 2")
+        for _ in 0...num {}
+    }
+
+    ```
+
+4.  Async Let
+    Introduced with Swift 5.5 in 2019. With `async let`, you can assign async function calls into constants. With `await` keyword, you can wait for the operation is done. You can create an array of async operations.
+
+    ```
+    func asyncLet() {
+        let apiURL1 = URL(string: "https://reqres.in/api/users")
+        let apiURL2 = URL(string: "https://reqres.in/api/users")
+        let apiURL3 = URL(string: "https://reqres.in/api/users")
+
+        Task {
+            async let res1 = makeGetRequest(url: apiURL1!)
+            async let res2 = makeGetRequest(url: apiURL2!)
+            async let res3 = makeGetRequest(url: apiURL3!)
+
+            let res = await [res1, res2, res3]
+
+            print(res)
+        }
+    }
+
+    private func makeGetRequest(url: URL) async -> String {
+        return url.description
+    }
+    ```
+
+5.  Actor
+    <br>
+    Introduced in 2019 with Swift 5.5.
+
+- Reference type
+- Class - properties, functions, initializers, deinitializers, inheritance, reference type
+- Struct - properties, functions, initializers, deinitializers, value type
+- Actors - properties, functions, initializers, deinitializers, reference type, does not support inheritance
+- Actors will guarantee that it's properties and variables are modified one at a time.
+- It is equivalent that that modifying of the properties happen with serial queue.
+- They avoid race condition.
+- They are reference types.
+- Supports Generic
+- Reference type, all the functions inside an actor are automatically converted to async.
+
+  ```
+  actor BankDetails {
+    var balance: Double
+
+    init(balance: Double) {
+        self.balance = balance
+    }
+
+    func deposit(amt: Double) {
+        balance += amt
+        print("deposited: \(amt) balance is \(balance)")
+    }
+
+    func withDrawAmt(amt: Double) {
+        balance -= amt
+        print("withDraw: \(amt)")
+    }
+  }
+
+  func actors() {
+    let bankDetails = BankDetails(balance: 0.0)
+
+    Task {
+        await bankDetails.deposit(amt: 100)
+        await bankDetails.withDrawAmt(amt: 50)
+        await bankDetails.deposit(amt: 200)
+    }
+  }
+  ```
+
 5.  ThirdParty Frameworks - Combine, RXSwift
 6.  Thread
 7.  Semaphores
@@ -1452,7 +1645,16 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
 4. Suspended: stops everything in the app.
 5. Terminated state
 
+<img src="Sources/app life cycle.jpeg" width="500px">
+
 Before iOS 13, there was only one scene, but from 13+ iOS supports multiple scenes.
+
+## Content Hugging vs Content Compression Resistance Priority
+
+- Hugging: Content does not want to grow
+- Compression Resistance: content does not want to shrink.
+
+For both hugging and compression resistance priorities, you need to set for vertical or horizontal. Within the same parent view, if there are two UIViews that are layed out next to each other, if the element which has higher priority, the constraint applies.
 
 # SwiftUI
 
@@ -1494,7 +1696,9 @@ Similar to StateObject. The difference is that ObservedObject recreates the whol
 You do not instantiate an object inside the view for @ObservedObject classes, becuase an observed object is used to refresh the whole UI. If it gets instantiated inside the view, the object gets destroyed when the view(s) disappears. The object should live without the view.
 
 ```
+
 @ObservedObject var vm: ObservedObjectClass
+
 ```
 
 ### ObserableObject (Protocol)
@@ -1506,9 +1710,11 @@ A type of object with a publisher that emits before the object has changed. By d
 Gets value from the OS. <a src="https://developer.apple.com/documentation/swiftui/environmentvalues/">Full List</a>
 
 ```
+
 @Environment(\.dismiss) var dismiss
 @Environment(\.colorScheme) var colorScheme
 @Environment(\.verticalSizeClass) var vSizeClass
+
 ```
 
 ### EnvironmentObject
@@ -1533,6 +1739,66 @@ Light weight offline storage available in SwiftUI. Under the hood it uses userDe
 
 Separating the view and business logic. MVC has View and Controller tightly coupled and the controller is not reused in different views. With MVVM, different views can reused ViewModel class.
 
+## MVVMC: Model View ViewModel Coordinator (Coordinator Pattern)
+
+Coordinator - which will be responsibile for all navigation logic for our app. Similar to dependency injection, coordinator is loosely coupled and has separate responsibilities.
+
+Problems with Coordinator
+
+- Can have retain cycle: two variables are referencing each other, it creates reference ratain cycle issue.
+
+### Retain Cycle
+
+<br>
+To solve the issue, you need `weak` keyword.
+
+```
+
+class Controller {
+var coordinator: Coordinator?
+
+    func doSomething() {
+
+    }
+
+}
+
+class Coordinator {
+let controller = Controller()
+
+    func navigationToHome() {
+        let controller = Controller()
+        controller.coordinator = self
+    }
+
+}
+
+```
+
+### Infinite Loop
+
+```
+
+class Controller {
+var coordinator = Coordinator()
+
+    func doSomething() {
+
+    }
+
+}
+
+class Coordinator {
+let controller = Controller()
+}
+
+let controller = Controller()
+controller.doSomething() // creates infinite loop
+
+```
+
+In a complicated app, the app should have multiple coordinators for modules.
+
 # Test Cases
 
 1. Unit Test Cases
@@ -1543,7 +1809,73 @@ Separating the view and business logic. MVC has View and Controller tightly coup
 
 Simple test cases uses XCTest framework. Simple logics in ViewModels or controller should be tested here. MVVM architecture makes it easier to run tests, because View and ViewModel (business logics) are separated. MVC makes it more difficult to test it because View and Controller (Mixture of View and Business logics) are tightly coupled.
 
+## 2. UIText Cases
+
+In UIText cases, the actual api calls are created to navigate on the UI. No need to provide mock data/logic that Unit Tests do.
+
+```
+
+import XCTest
+
+final class FirstSwiftUIProjectUITests: XCTestCase {
+private var app: XCUIApplication! // Use "!" so that the class doesn't need to have an initializer.
+
+    override func setUpWithError() throws {
+        app = XCUIApplication()
+        continueAfterFailure = false
+        app.launch()
+    }
+
+    override func tearDownWithError() throws {
+        app = nil
+    }
+
+    func testExample() throws {
+        let app = XCUIApplication()
+        app.launch()
+    }
+
+    func testScreenTitle() throws {
+        XCTAssert(app.staticTexts["Welcome to SwiftUI"].exists)
+    }
+
+    func testLoginTextFields() throws {
+
+// let email = app.textFields["Enter email"]
+let email = app.textFields["email"]
+XCTAssertTrue(email.exists)
+
+        let password = app.secureTextFields["Password"]
+        XCTAssertTrue(password.exists)
+    }
+
+    func testLaunchPerformance() throws {
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
+            // This measures how long it takes to launch your application.
+            measure(metrics: [XCTApplicationLaunchMetric()]) {
+                XCUIApplication().launch()
+            }
+        }
+    }
+
+}
+
+```
+
+### Test Driven Development
+
+The development starts with the given test cases so that the code can pass all the test cases while developing an application. Test cases come first.
+
 # Design Pattern
+
+1. Creational
+   <br>Creating objects.
+2. Behaviroal
+   <br>
+   How you communicate between different objects such as delegate, closures, and Combine (publisher & subscriber).
+3. Structrual
+   <br>
+   How to structure your code such as MVC, MVVM, MVVM-C, VIPER.
 
 ## Singleton
 
@@ -1552,19 +1884,22 @@ It ensures that a class can only have one instance. It provides global access to
 1. Create singleton instance
 
 ```
+
 static let shared = ClassName()
+
 ```
 
 2. final class
 3. private initializer
 
 ```
+
 import Foundation
 
 final class AuthManager {
-    static let shared = AuthManager()
-    var authToken: String = ""
-    var isLoggedIn = false
+static let shared = AuthManager()
+var authToken: String = ""
+var isLoggedIn = false
 
     private init() {}
 
@@ -1577,6 +1912,7 @@ final class AuthManager {
         authToken = ""
         isLoggedIn = false
     }
+
 }
 
 ```
@@ -1586,5 +1922,298 @@ final class AuthManager {
 1. Testing makes it difficult because the object is shared.
 2. It consumes the memory.
 3. Properties are tightly.
+4. Lose controls of properties inside a singleton.
 
 UserDefaults/AppStorage should be used to store simple data such as isLoggedIn. UserDefaults is thread safe.
+
+## Factory Design Pattern
+
+Used widely in the industry. The consept comes from a real factory in the industry which has mass production. Gives more options to customize each object.
+
+// Storyboard gives an abstraction
+
+```
+
+func navigateToHome() {
+let sb = UIStoryboard(name: "Main", bundle: nil)
+let vc = sb.instantiateViewController(withIdentifieer: "abc")
+self.navigationController.pushViewController(vc, animated: true)
+}
+
+```
+
+Create functions to get objects
+<br>
+With this pattern, it reduces the number of code and make functions reusable. It can hide complexity from others.
+
+```
+
+func getLabelObjc(text: String = "", textColor: UIColor = .black, textAlignment: NSTextAlignment = .center, numberOfLines: Int = 0) -> UILabel {
+let label = UILabel()
+label.text = text
+label.textColor = textColor
+label.textAlignment = textAlignment
+label.numberOfLines = numberOfLines
+
+    return label
+
+}
+
+```
+
+# Save Data Locally on iOS
+
+1. The data is stored locally when the network is not available. Once the network connection is avalalble, the application makes an api call to post data.
+
+None of the banking applications store data locally.
+
+1. UserDefault
+
+```
+
+// singleton
+let userDefault = UserDefault.stanard
+userDefault.set
+
+```
+
+Store token when the user logs in.
+
+Question: What is the difference between UserDefault and Keychain?
+
+UserDefault data is removed when a user removes an app from the device.
+
+2. Keychain
+   Apple does not make it public how the data is encryped. What will happen to the keychain data when you remove an app from your app? It will remain on the device.
+
+```
+
+    import SwiftUI
+
+    struct KeyChainUserView: View {
+        @State var savedInfo: String = "None"
+        let passwordKey: String = "com.suguru.tokuda.myPassword"
+
+        var body: some View {
+            VStack(spacing: 20) {
+                Text(savedInfo)
+
+                Button("Save info into KeyChain") {
+                    saveDataIntoKeyChain(value: "123467", forKey: passwordKey)
+                }.buttonStyle(.borderedProminent)
+
+                Button("Get info from KeyChain") {
+                    // convention for key com.suguru.tokuda.myPassword
+                    getDataFromKeyChain(forKey: passwordKey)
+                }.buttonStyle(.borderedProminent)
+            }
+        }
+
+        func saveDataIntoKeyChain(value: String, forKey: String) {
+            if let rawData = value.data(using: .utf8) {
+                let query: [String : Any] = [
+                    kSecClass as String: kSecClassGenericPassword,
+                    kSecAttrAccount as String: forKey,
+                    kSecValueData as String: rawData
+                ]
+
+                SecItemAdd(query as CFDictionary, nil)
+                print("Data saved into Keychain")
+            }
+        }
+
+        func getDataFromKeyChain(forKey: String) -> String {
+            let query: [String : Any] = [
+                kSecClass as String : kSecClassGenericPassword,
+                kSecAttrAccount as String : forKey,
+                kSecReturnData as String : kCFBooleanTrue!,
+                kSecMatchLimit as String: kSecMatchLimitOne
+            ]
+
+            var dataTypeRef: AnyObject?
+            // CF: Core Foundation - coming from OS
+            let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+
+            if status == noErr {
+                if let data = dataTypeRef as? Data, let result = String(data: data, encoding: .utf8) {
+                    print("\(result)")
+                    savedInfo = result
+                }
+            }
+
+            return "Error getting valu"
+        }
+    }
+
+```
+
+3. Plist (Property List)
+   This is XML
+4. SqlList: No one uses
+5. CoreData
+6. Filemanager
+7. Realm
+
+## Offline / Local Storage options in iOS
+
+1. User Default == @AppStorage - This is used to store small amount of info in app such as bool, string, int. Use case is to store if the user is logged in, if the user has launched the app in the past.
+2. Keychain - To store sensitive or critical user data such as passwords, certificates, biometric info, cryptographic keys, medical data, user finantial details. Critical API keys should be stored in the keychain.
+3. Coredata
+
+- A framework provided by Apple for storing and managing large amount of data. SQLite
+- The actual database. To make things easy for developers to save, fetch, delete, update operations on database.
+- ORM - Object Relational Model, which creates a layer between database and UI.
+- 4 main pillers or classes/Core Data Stack
+
+1. NSManagedObjectModel
+
+- This represents ur model part/data part of application
+- This will have entities, attribues and relationships between multiple tables.
+- We can compare info about models and entities
+- This is a schema for ur database.
+
+2. NSManagedObjectContext
+
+- This is the part which deveoper will interact the most.
+- We will do actual save, delete, fetch, insert, operations.
+- This will keep a track of all the chanes made to this model.
+
+3. NSPersistanceStoreCoordinator
+
+- It keeps in reference of NSManagedObjectModel and NSManagedObjectContext
+- It will coordinate with NSPersistanceStore to save all changes.
+
+4. NSPersisanceState
+
+- This is used to setup all model, context and StoreCoordinator at once.
+- It will hold the reference of all above.
+- The actual SQL queries are called in the PersistanceState.
+
+### Relationship
+
+- SQLite maps the relationship automatically when entities are created.
+- CoreData does not do cascading deletion. It is developer's responsibility removing all the data.
+
+### Core Data Concurrency
+
+- CoreData by default works on main thread
+- CoreData provides 3 types of concurrency for managed object model
+
+1. NSMainQueueConcurrencyType - all the operations are happening on main thread.
+
+- This is the default behavior.
+- Small projects or when we want to save small amount of data.
+
+2. NSPrivateQueueConcurrencyType
+
+- Everything related to coredata will be done in background thread.
+- This will be useful for large data and large coredata operations.
+
+3. NSConfinementQueueConcurrencyType
+
+- This is deprecated.
+- This is only in Objective-C
+
+<img src="Sources/core-data-stack.jpeg" width="700">
+
+### Migration
+
+1. Light Weight Migration
+
+- When ever there is a change in names, change in type of data delete something from previous Entity table.
+- When the user gets the new version from the app store, the user's iPhone creates a new database based on the previous version. If a developer doesn't create a new version, the app crashes because it doesn't know how to map entity properties.
+
+To create a version on Xcode, click the Data Model, on the top bar Editor > Add Model Version. Then you can add new properties.
+
+No need to write additional code for migration.
+
+2. Heavy Weight Migration
+
+- When we exceed the light weight migration capability
+
+We need to write logic of data base migration in app delegate.
+
+4. PList - property list - key value pairs, like dictionary. Dummy data can be stored in Plist instead of UserDefault. API keys can also stored, but not critical API keys.
+5. Realm/Firebase
+6. SwiftData
+7. In bundle - json text, pdf, image (File manager)
+
+# SceneDelegate
+
+Apple introduce it in 2019 so that iOS applications can run multiple applications simultaneously.
+
+# Third Party Packages
+
+History
+Cocopa Pods came first (2011), but there was an issue with Cocoa Pods. Then Carthage came into place, but this is not popular. SPM came in 2019, provided by Apple.
+
+1. SPM (Swift Package Management)
+2. Cocoa Pods
+   Most of the projects use Cocoa Pods. After running `pod install`, open the project with `...xcworkspace`
+3. Carthage
+
+# Combine Framework
+
+Came out in 2019. This is Apple own native framework introduced in iOS 13 in 2019 for reactive programming.
+
+- It works well with both SwiftUI UIKit.
+- It has declarative approach to processing events in Swift.
+- If x thing will happen in future then do Y thing.
+- Publisher Subscriber Mdel.
+
+Real time examples:
+
+1. Radio broadcaster (FM) Rario Jockey
+2. Newspapers
+3. Podcasts
+
+Keywords:
+
+1. Publisher - someone who produces the data or value/this is a `protocol`. It transmits sequence of values over time.
+2. Subscriber - this is the one who consumes the values produced by Publisher. This is also a `protocol`.
+3. Operator - this is a methd that are called on publisher and they return publishered data used for any motification. Multiple operators can chain together.
+
+## Advantages of Combine
+
+1. Simplified async code
+2. Declarative syntax
+3. Cancellation support
+4. Built in memory management
+5. Multi-threading
+6. Multiplatform - except for Linux
+
+Before Combine, RXSwift (https://github.com/ReactiveX/RxSwift) (3rd party framework) was used.
+
+### RunLoop
+
+A RunLoop is a programmatic interface to objects that manage input sources, such as touches for an application. A RunLoop is created and managed by the system, who’s also responsible for creating a RunLoop object for each thread object. The system is also responsible for creating the main run loop representing the main thread.
+
+### DispatchQueue
+
+DispatchQueue.main is the dispatch queue associated with the main thread of the current process. The system is responsible for generating this queue which represents the main thread. A dispatch queue executes tasks serially or concurrently on its associated thread.
+
+### RunLoop.main and DispatchQueue.main are the same but different
+
+Both RunLoop.main and DispatchQueue.main execute their code on the main thread, meaning that you can use both for updating the user interface. Both schedulers allow us to update the UI after a Combine value was published, which is why there’s no apparent reason stopping us from using one or another. Though, there are some essential differences to know.
+
+The most significant difference between RunLoop.main and DispatchQueue.main is that the latter executes directly while the RunLoop might be busy. For example, presenting a downloaded image while scrolling will only immediately show when using the DispatchQueue.main as a scheduler
+
+### Ways to make api calls
+
+1. Closures
+2. Protocol Delegate
+3. Async Await
+4. Combine
+5. RXSWift/Alamofire 3rd party framework
+
+# Map
+
+## MapKit
+
+## CoreLocation
+
+User's permission is saved in UserDefault, but developers never access to the particular in this case. `CLLocationManager` gives the data.
+
+```
+
+```
