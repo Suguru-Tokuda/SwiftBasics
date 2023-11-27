@@ -1912,7 +1912,6 @@ var isLoggedIn = false
         authToken = ""
         isLoggedIn = false
     }
-
 }
 
 ```
