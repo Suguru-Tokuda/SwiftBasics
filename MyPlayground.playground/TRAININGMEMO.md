@@ -1656,6 +1656,29 @@ Before iOS 13, there was only one scene, but from 13+ iOS supports multiple scen
 
 For both hugging and compression resistance priorities, you need to set for vertical or horizontal. Within the same parent view, if there are two UIViews that are layed out next to each other, if the element which has higher priority, the constraint applies.
 
+## Start a scene programatically
+
+`SceneDelegate.swift`
+
+```
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, willConnectTo, session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        // instantiate a window object
+        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        // Set window scene
+        window?.windowScene = windowScene
+        // Set a root view controller
+        window?.rootViewController = UIViewController()
+        // set the window visible
+        window?.makeKeyAndVisible()
+    }
+}
+```
+
 # SwiftUI
 
 ## Difference between UIKit and SwiftUI
