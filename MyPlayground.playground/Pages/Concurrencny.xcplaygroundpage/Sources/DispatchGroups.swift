@@ -73,13 +73,5 @@ private func makeGetRequest(url: URL, _ completionHandler: @escaping (Result<Dat
         }
         
         completionHandler(.success(rawData))
-//
-//        
-//        do {
-//            let result = try JSONDecoder().decode(type, from: rawData)
-//            completionHandler(.success(result))
-//        } catch {
-//            completionHandler(.failure(error))
-//        }
     }.resume()
 }
