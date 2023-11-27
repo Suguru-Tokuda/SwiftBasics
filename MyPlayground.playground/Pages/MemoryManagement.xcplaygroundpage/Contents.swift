@@ -101,3 +101,23 @@ car = nil
 
 print(person)
 print(car)
+
+class Controller {
+    weak var coordinator: Coordinator?
+    
+    func doSomething() {
+        
+    }
+}
+
+class Coordinator {
+    let controller = Controller()
+    
+    func navigationToHome() {
+        let controller = Controller()
+        controller.coordinator = self
+    }
+}
+//
+//let controller = Controller()
+//controller.doSomething() // creates infinite loop
