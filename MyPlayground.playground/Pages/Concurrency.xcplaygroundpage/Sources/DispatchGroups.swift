@@ -32,6 +32,10 @@ func dispatchGroups() {
         print("apiURL3 done")
         apiGroup.leave()
     }
+    
+    apiGroup.notify(queue: DispatchQueue.main) {
+        // UPDATE UI
+    }
 }
 
 enum NetworkError : Error {

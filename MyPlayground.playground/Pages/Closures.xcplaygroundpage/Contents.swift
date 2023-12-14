@@ -27,10 +27,11 @@ func doSquare(n1: Int, completion: (Int) -> ()) {
     let result = n1 * n1
     completion(result)
 }
-
+print("before do square")
 doSquare(n1: 5) { output in
     print("doSquare - \(output)")
 }
+print("after do square")
 
 doSquare(n1: 25, completion: { output in
     print("doSquare - \(output)")
@@ -40,6 +41,8 @@ doSquare(n1: 25, completion: { output in
 let nonEscapingClosure = {
     print("non escaping")
 }
+
+
 
 nonEscapingClosure()
 
@@ -87,10 +90,14 @@ doSomeTask2(name: "Suguru", age: 36, onSuccess: { output in
 }, isValid: false)
 
 // 4. Auto Closure - When a closure doesn't take any parameter not it returns anything from closure then it get self wraped when called is known as Auto Closure.
-func travelToDestination(action: () -> ()) {
-    action()
+func travelToDestination(action: @autoclosure () -> String) {
+    print(action())
 }
 
-travelToDestination {
-    
-}
+var myName: String = {
+    return "Suguru Tokuda"
+}()
+
+travelToDestination(action: myName)
+
+print(Int.max)

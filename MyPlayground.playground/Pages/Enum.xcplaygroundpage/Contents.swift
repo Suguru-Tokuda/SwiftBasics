@@ -112,8 +112,27 @@ getVehicalPrices(range: .lowEnd(price: 400))
 getVehicalPrices(range: .midEnd(type: "Civic Type R"))
 //getVehicalPrices(range: .noPricing)
 
+var myVehicle = VehicalPrices.highEnd(price: 20000)
+print(myVehicle.0)
+
 enum NetworkError {
     case ResponseError(_ code: Int)
     case ParsingError
     case DataNotFoundError
+}
+
+protocol Screen {
+    associatedtype ItemType
+    var items: [ItemType] { get set }
+}
+
+class MainScreen: Screen {
+    typealias ItemType = String
+    var items = [String]()
+}
+
+extension Double {
+    var myDouble: Int {
+        return 0
+    }
 }

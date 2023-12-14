@@ -29,10 +29,15 @@ func operationQueues() {
     operationQueue.maxConcurrentOperationCount = 1
     
     operationQueue.cancelAllOperations()
-    _ = operationQueue.isSuspended
+//    _ = operationQueue.isSuspended
     operationQueue.name = "My Operation Queue 1"
     
     let operationQueue2 = OperationQueue()
     operationQueue.name = "My Operation Queue 2"
+    
+    operationQueue.waitUntilAllOperationsAreFinished()
+    
+    operationQueue2.waitUntilAllOperationsAreFinished()
+    print("hello world")
 }
 
