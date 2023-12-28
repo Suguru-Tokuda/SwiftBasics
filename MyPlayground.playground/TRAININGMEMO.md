@@ -897,6 +897,24 @@ Generic can also be used for classes, structs, and enums. The advantage of Gener
 
 With generic, you should comform to a Protocol so that the use case can be limited.
 
+```
+import Foundation
+import Combine
+
+protocol Networking {
+    func getDataFromNetworkLayer<T: Decodable>(url: URL, type: T.Type) -> AnyPublisher<T, Error>
+}
+
+class NetworkManager: Networking {
+    func getDataFromNetworkLayer<T: Decodable>(url: URL, type: T.Type) -> AnyPublisher<T, Error> where T: Decodable {
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .map { $0.data }
+            .decode(type: T.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
+}
+```
+
 ### Generic with Class
 
 ```
@@ -1065,34 +1083,61 @@ func performApiCallTask(completion: @escaping () -> ()) {
 }
 ```
 
+@escaping
+@escaping needs to be added before the closure if the function contains synchronous code.
+
+```
+func timer(completion: @escaping () -> ()) {
+    print("Got into the sleep func")
+
+    DispatchQueue.global(qos: .background).async {
+        print("Background thread!")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            print("Back to main after 5 seconds!")
+            completion()
+        }
+    }
+}
+```
+
 The closure gets called because isEscaping is true
 
 ```
+
 escapingClosure(val: 6, complesion: { val in
     print(val)
 }, isEscaping: true)
+
 ```
 
 The closure never gets called
 
 ```
+
 escapingClosure(val: 4, complesion: { val in
     print(val) // never gets executed
 }, isEscaping: false)
+
 ```
 
 `Trailig closure`: the closure that is at the end of the function parameter
 
 ```
-func trailingClosure(val: String, _ completion: (String) -> Void) {
+
+func trailingClosure(val: String, \_ completion: (String) -> Void) {
     print(val)
 }
+
+
 ```
 
 Calling a closure func with short hand.
 
 ```
+
 trailingClosure(val: "This is an example of a trailing closure") { print($0) }
+
 ```
 
 `Auto Closure`: a type of closure without any paramter. Used as a call back.
@@ -1105,28 +1150,23 @@ func onBtnClick(action: () -> ()) {
 onBtnClick {
     print("Btn clicked!")
 }
-```
-
-@escaping
-@escaping needs to be added before the closure if the function contains synchronous code.
-
-```
-func timer(completion: @escaping () -> ()) {
-print("Got into the sleep func")
-
-    DispatchQueue.global(qos: .background).async {
-        print("Background thread!")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            print("Back to main after 5 seconds!")
-            completion()
-        }
-    }
-}
 
 timer {
     print("timer called after completion")
 }
+```
+
+```
+func printString(_ value: @autoclosure () -> String) {
+    print(value())
+}
+
+func generateString() -> String {
+    return "I'm an iOS Developer"
+}
+
+printString("Hello World")
+printString(generateString())
 ```
 
 ## Higher Order Functions
@@ -1136,48 +1176,57 @@ Higher order functions take a collection. The caller can use a custom function (
 1. `map`: takes a collection and return a collection
 
 ```
+
 var randomNums: [Int] = []
 for i in 0..<100 {
-    // add random num
-    randomNums.append(Int.random(in: 1..<100))
+// add random num
+randomNums.append(Int.random(in: 1..<100))
 }
 
 let randomNumsPlusOne = randomNums.map { $0 + 1 } // add 1 to every number from randomNums and assign the return value to a constant.
 print(randomNumsPlusOne)
+
 ```
 
 2. `filter`: filters a collection for the condition specified inside a closure.
 
 ```
+
 let numsOver50 = randomNums.filter { $0 > 50 } // filter numbers that are greater than 50
 print(numsOver50)
+
 ```
 
 3. `reduce`: reduce function temporarily stores a value and applies the specified operation for each element.
 
 ```
+
 let sumOfRandomNums = randomNums.reduce(0, +)
 // equivalent but set the initial value to 100
 let sumOfRandomNums2 = randomNums.reduce(100) { partialResult, num in
-    partialResult + num
+partialResult + num
 }
 print(sumOfRandomNums)
 print(sumOfRandomNums2) // 100 greater than sumOfRandomNums
+
 ```
 
 4. `sort`
 
 ```
+
 let randomNumsSortAsc = randomNums.sorted(by: { $0 < $1 })
 let randomNumsSortDesc = randomNums.sorted(by: { $0 > $1 })
 
 print(randomNumsSortAsc)
 print(randomNumsSortDesc)
+
 ```
 
 5. `flatMap`
 
 ```
+
 let nums: [[Int]] = [[1,2,3], [4,5,6]]
 let flatNums = nums.flatMap { $0.count } // instead of returning all numbers, return count for individual array inside the multi dimensional array.
 print(flatNums)
@@ -1186,33 +1235,40 @@ let wordList: [String] = ["Hello", "World"]
 let flattenedWordListLower: [Character] = wordList.flatMap { $0.lowercased() } // converts a String array into a Character array. During the operation all the cases are lowered.
 
 print(flattenedWordListLower)
+
 ```
 
 6. `compactMap`: used to remove all nils inside a collection.
 
 ```
+
 let optionalNums: [Int?] = [1, 2, 3, 4, nil, 6, nil, 8, 9]
 let nonOptionalNums = optionalNums.compactMap { $0 }
 
 print(nonOptionalNums) // only non optional values are returned.
+
 ```
 
 7. `forEach`: iterate through a collection. Similiar to for item in items { block of code }
 
 ```
+
 var sum: Int = 0
 randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
+
 ```
 
 8. `zip`: combine two arrays into tuples
 
 ```
+
 let petOwners = ["Mike", "Sarah", "Kat"]
 let pets = ["Leo", "Tiger", "Mao", "Hello"]
 
 for (owner, pet) in zip(petOwners, pets) {
-    print("\(owner) owns \(pet)")
+print("\(owner) owns \(pet)")
 }
+
 ```
 
 ## Dependency Injection
@@ -1232,21 +1288,23 @@ DI lets the code to be loosely coupled. DI is a technique in software developmen
 
 Error handlign in Swift starts with creating an enum which conforms to Error protol. After creating an custom error enum, the rest of the code in the project should handle errors property. There are 3 types of error handling methdos in Swift.
 
-1. do { try \_\_\_ } catch {}
+1. `do { try \_\_\_ } catch {}`
    The best way to handle errors in swift, becuase every error can be handled in the catch clause
 
 ```
+
 do {
-    try // function call
+try // function call
 } catch let error {
-    // handle here
+// handle here
 }
+
 ```
 
-2. try?
+2. `try?`
    Second best way to handle error throwing functions in Swift. The program still runs without handling an error. With try? the function call gets ignored if there is an error and proceeds the rest of the code. The downside is that an error is not handled, it just gets ignored.
 
-3. try!
+3. `try!`
    Should not be used at all in the real projects, because it is equivalent of force unwrap for optional. The application can crash when an error happens.
 
 ## Access Modifiers
@@ -1269,10 +1327,11 @@ Automatic Reference Counting (Garbage collection in Java; simliar but not the sa
 - It keeps a track of reference to objects and releases them when they are not needed.
 
 ```
+
 class Person {
-    var name: String // strong reference: ARC will work on collecting unused references and clears.
-    var age: Int? // strong
-    weak var car: Car? // weak reference
+var name: String // strong reference: ARC will work on collecting unused references and clears.
+var age: Int? // strong
+weak var car: Car? // weak reference
 
     init(name: String, age: Int) {
         self.name = name
@@ -1289,36 +1348,46 @@ class Person {
         self.age = nil
         self.car = nil
     }
+
 }
+
 ```
 
 reference count = 0 before initialization
 
 ```
+
 // the following code created a reference and trigerred an initializer.
 var person: Person? = Person(name: "SwiftUI", age: 4)
+
 ```
 
 reference count = 1 after initialization
 
 ```
+
 var person2 = person // strong reference
+
 ```
 
 reference count = 2
 it is better to remove an object by assigning nil
 
 ```
+
 //person = nil // 2 - 1 = 1
 //person2 = nil // 1 - 1 = 0
+
 ```
 
 deinit never gets called until all the references are removed.
 reference count = 0 after deinitialization
 
 ```
+
 print(person) // nil
 print(person2) // nil
+
 ```
 
 ### Retain Cycle Issue
@@ -1332,10 +1401,11 @@ In real life example for weak reference:
 3. Constructor dependency injection
 
 ```
+
 class Person {
-    var name: String // strong reference: ARC will work on collecting unused references and clears.
-    var age: Int? // strong
-    var car: Car? // weak reference
+var name: String // strong reference: ARC will work on collecting unused references and clears.
+var age: Int? // strong
+var car: Car? // weak reference
 
     init(name: String, age: Int) {
         self.name = name
@@ -1352,11 +1422,12 @@ class Person {
         self.age = nil
         self.car = nil
     }
+
 }
 
 class Car {
-    var type: String
-    var owner: Person?
+var type: String
+var owner: Person?
 
     init(type: String) {
         self.type = type
@@ -1371,44 +1442,52 @@ class Car {
         print("deinit Car")
         self.owner = nil
     }
+
 }
+
 ```
 
 Create `Person` and `Car` objects then assign `car` to `owner`, `owner` to `car` objects.
 
 ```
+
 var person: Person? = Person(name: "SwiftUI", age: 4)
 var car: Car? = Car(type: "Cumbustion")
 
 person?.car = car
 car?.owner = person
+
 ```
 
 deinit is not called in `Person` and `Car` class because Person and Car class have `strong reference` to each other.
 
 ```
+
 car = nil
 person = nil
+
 ```
 
 Prep code for references
 
 ```
+
 class Vehicle {
-    var make: String
-    var model: String
-    var year: Int
+var make: String
+var model: String
+var year: Int
 
     init(make: String, model: String, year: Int) {
         self.make = make
         self.model = model
         self.year = year
     }
+
 }
 
 class Engine {
-    var hoursePower: Int
-    var car: Vehicle?
+var hoursePower: Int
+var car: Vehicle?
 
     init(hoursePower: Int) {
         self.hoursePower = hoursePower
@@ -1417,11 +1496,12 @@ class Engine {
     deinit {
         print("\(type(of: self)) deinit")
     }
+
 }
 
 class Break {
-    var breakingPower: Int
-    var car: Vehicle?
+var breakingPower: Int
+var car: Vehicle?
 
     init(breakingPower: Int) {
         self.breakingPower = breakingPower
@@ -1430,7 +1510,9 @@ class Break {
     deinit {
         print("\(type(of: self)) deinit")
     }
+
 }
+
 ```
 
 ### strong reference
@@ -1438,9 +1520,10 @@ class Break {
 The default reference type to keep objects alive as long as they are being used.
 
 ```
+
 class HatchBack : Vehicle {
-    var engine: Engine?
-    var vehicleBreak: Break?
+var engine: Engine?
+var vehicleBreak: Break?
 
     override init(make: String, model: String, year: Int) {
         super.init(make: make, model: model, year: year)
@@ -1451,10 +1534,13 @@ class HatchBack : Vehicle {
         self.engine = nil
         self.vehicleBreak = nil
     }
+
 }
+
 ```
 
 ```
+
 var engine: Engine? = Engine(hoursePower: 250)
 var vehicleBreak: Break? = Break(breakingPower: 50)
 
@@ -1465,6 +1551,7 @@ vehicleBreak?.car = civic
 
 civic?.engine = engine
 civic?.vehicleBreak = vehicleBreak
+
 ```
 
 ### weak reference
@@ -1601,163 +1688,162 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
 4.  DispatchGroup
     DispatchGroup allows developers to wait for multiple tasks to complete before you proceed to next tasks. Difference between DispatchGrouop and OperationQueue is that DispatcGroup has a better control when to start and finish operations. It also has better control with completion handlers.
 
-`enter()`
-<br>
-`leave()`
-<br>
-`notify()`
+    `enter()`
+    <br>
+    `leave()`
+    <br>
+    `notify()`
 
-```
-func dispatchGroups() {
-    let apiURL1 = URL(string: "https://reqres.in/api/users")
-    let apiURL2 = URL(string: "https://reqres.in/api/users")
-    let apiURL3 = URL(string: "https://reqres.in/api/users")
+    ```
+    func dispatchGroups() {
+        let apiURL1 = URL(string: "https://reqres.in/api/users")
+        let apiURL2 = URL(string: "https://reqres.in/api/users")
+        let apiURL3 = URL(string: "https://reqres.in/api/users")
 
-    let apiGroup = DispatchGroup()
+        let apiGroup = DispatchGroup()
 
-    // 1
-    apiGroup.enter()
-    makeGetRequest(url: apiURL1!) { result in
-        print("apiURL1 done")
-        apiGroup.leave()
-    }
+        // 1
+        apiGroup.enter()
+        makeGetRequest(url: apiURL1!) { result in
+            print("apiURL1 done")
+            apiGroup.leave()
+        }
 
-    // 2
-    apiGroup.enter()
-    makeGetRequest(url: apiURL2!) { result in
-        print("apiURL2 done")
-        apiGroup.leave()
-    }
+        // 2
+        apiGroup.enter()
+        makeGetRequest(url: apiURL2!) { result in
+            print("apiURL2 done")
+            apiGroup.leave()
+        }
 
-    // 3
-    apiGroup.enter()
-    makeGetRequest(url: apiURL3!) { result in
-        print("apiURL3 done")
-        apiGroup.leave()
-    }
+        // 3
+        apiGroup.enter()
+        makeGetRequest(url: apiURL3!) { result in
+            print("apiURL3 done")
+            apiGroup.leave()
+        }
 
-    apiGroup.notify(queue: DispatchQueue.main) {
-        // UPDATE UI
-    }
-}
-
-enum NetworkError : Error {
-    case badUrlResponse(url: URL),
-         invalidURL(url: String),
-         unknown
-}
-
-extension NetworkError : LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .badUrlResponse(url: let url):
-            return "Bad response from URL. \(url)"
-        case .invalidURL(url: let urlStr):
-            return "Invalid url: \(urlStr)"
-        case .unknown:
-            return "Unknown error"
+        apiGroup.notify(queue: DispatchQueue.main) {
+            // UPDATE UI
         }
     }
-}
-```
+
+    enum NetworkError : Error {
+        case badUrlResponse(url: URL),
+            invalidURL(url: String),
+            unknown
+    }
+
+    extension NetworkError : LocalizedError {
+        var errorDescription: String? {
+            switch self {
+            case .badUrlResponse(url: let url):
+                return "Bad response from URL. \(url)"
+            case .invalidURL(url: let urlStr):
+                return "Invalid url: \(urlStr)"
+            case .unknown:
+                return "Unknown error"
+            }
+        }
+    }
+    ```
 
 5.  SwiftConcurrency - Await Async
     <br>
     Introduced in 2019 - iOS 13
 
-```
-func asyncAwait() {
-    Task {
-        let output = await task1()
-        // task 2 will start only after task1 finishes
-        await task2(num: output)
-        print("task2 finished")
+    ```
+    func asyncAwait() {
+        Task {
+            let output = await task1()
+            // task 2 will start only after task1 finishes
+            await task2(num: output)
+            print("task2 finished")
+        }
     }
-}
 
-func task1() async -> Int {
-    print("Task 1")
-    var res = 0
-    for _ in 0...(Int8.max / 4) { res += 1}
-    return res
-}
+    func task1() async -> Int {
+        print("Task 1")
+        var res = 0
+        for _ in 0...(Int8.max / 4) { res += 1}
+        return res
+    }
 
-func task2(num: Int) async {
-    print("Task 2")
-    for _ in 0...num {}
-}
-
-```
+    func task2(num: Int) async {
+        print("Task 2")
+        for _ in 0...num {}
+    }
+    ```
 
 6.  Async Let
     Introduced with Swift 5.5 in 2019. With `async let`, you can assign async function calls into constants. With `await` keyword, you can wait for the operation is done. You can create an array of async operations.
 
-```
-func asyncLet() {
-    let apiURL1 = URL(string: "https://reqres.in/api/users")
-    let apiURL2 = URL(string: "https://reqres.in/api/users")
-    let apiURL3 = URL(string: "https://reqres.in/api/users")
+    ```
+    func asyncLet() {
+        let apiURL1 = URL(string: "https://reqres.in/api/users")
+        let apiURL2 = URL(string: "https://reqres.in/api/users")
+        let apiURL3 = URL(string: "https://reqres.in/api/users")
 
-    Task {
-        async let res1 = makeGetRequest(url: apiURL1!)
-        async let res2 = makeGetRequest(url: apiURL2!)
-        async let res3 = makeGetRequest(url: apiURL3!)
+        Task {
+            async let res1 = makeGetRequest(url: apiURL1!)
+            async let res2 = makeGetRequest(url: apiURL2!)
+            async let res3 = makeGetRequest(url: apiURL3!)
 
-        let res = await [res1, res2, res3]
+            let res = await [res1, res2, res3]
 
-        print(res)
+            print(res)
+        }
     }
-}
 
-private func makeGetRequest(url: URL) async -> String {
-    return url.description
-}
-```
+    private func makeGetRequest(url: URL) async -> String {
+        return url.description
+    }
+    ```
 
 7.  Actor
     <br>
     Introduced in 2019 with Swift 5.5.
 
-- Reference type
-- Class - properties, functions, initializers, deinitializers, inheritance, reference type
-- Struct - properties, functions, initializers, deinitializers, value type
-- Actors - properties, functions, initializers, deinitializers, reference type, does not support inheritance
-- Actors will guarantee that it's properties and variables are modified one at a time.
-- It is equivalent that that modifying of the properties happen with serial queue.
-- They avoid race condition.
-- They are reference types.
-- Supports Generic
-- Reference type, all the functions inside an actor are automatically converted to async.
+    - Reference type
+    - Class - properties, functions, initializers, deinitializers, inheritance, reference type
+    - Struct - properties, functions, initializers, deinitializers, value type
+    - Actors - properties, functions, initializers, deinitializers, reference type, does not support inheritance
+    - Actors will guarantee that it's properties and variables are modified one at a time.
+    - It is equivalent that that modifying of the properties happen with serial queue.
+    - They avoid race condition.
+    - They are reference types.
+    - Supports Generic
+    - Reference type, all the functions inside an actor are automatically converted to async.
 
-```
-actor BankDetails {
-var balance: Double
+    ```
+    actor BankDetails {
+        var balance: Double
 
-init(balance: Double) {
-    self.balance = balance
-}
+        init(balance: Double) {
+            self.balance = balance
+        }
 
-func deposit(amt: Double) {
-    balance += amt
-    print("deposited: \(amt) balance is \(balance)")
-}
+        func deposit(amt: Double) {
+            balance += amt
+            print("deposited: \(amt) balance is \(balance)")
+        }
 
-func withDrawAmt(amt: Double) {
-    balance -= amt
-    print("withDraw: \(amt)")
-}
-}
+        func withDrawAmt(amt: Double) {
+            balance -= amt
+            print("withDraw: \(amt)")
+        }
+        }
 
-func actors() {
-let bankDetails = BankDetails(balance: 0.0)
+        func actors() {
+        let bankDetails = BankDetails(balance: 0.0)
 
-Task {
-    await bankDetails.deposit(amt: 100)
-    await bankDetails.withDrawAmt(amt: 50)
-    await bankDetails.deposit(amt: 200)
-}
-}
-```
+        Task {
+            await bankDetails.deposit(amt: 100)
+            await bankDetails.withDrawAmt(amt: 50)
+            await bankDetails.deposit(amt: 200)
+        }
+    }
+    ```
 
 8.  ThirdParty Frameworks - Combine, RXSwift
 9.  Thread
@@ -1786,7 +1872,7 @@ Task {
 - `applicationWillResignActive(_ application: UIApplication)`
 - `applicationWillTerminate(_ application: UIApplication)`
 
-<img src="Sources/app life cycle.jpeg" width="500px">
+    <img src="Sources/app life cycle.jpeg" width="500px">
 
 ### UIViewController Life Cycle
 
@@ -1818,7 +1904,7 @@ Task {
   <br>
   This method will get called when the view contrller's view was removed from the view hierarchy.
 
-<img src="Sources/UIView_Lifecycle.webp" width="700px">
+    <img src="Sources/UIView_Lifecycle.webp" width="700px">
 
 Before iOS 13, there was only one scene, but from 13+ iOS supports multiple scenes.
 
@@ -1866,11 +1952,12 @@ In SwiftUI, views are structs. In UIKit, everything was declared as class (refer
 2. @Binding
 3. @StateObject
 4. @ObservedObject
-5. ObservableObject
-6. @Environment
-7. @EnvironmentObject
-8. @Appstorage
-9. @Fetch
+5. @Published
+6. ObservableObject
+7. @Environment
+8. @EnvironmentObject
+9. @Appstorage
+10. @Fetch
 
 ### State
 
@@ -1892,7 +1979,9 @@ Similar to StateObject. The difference is that ObservedObject recreates the whol
 You do not instantiate an object inside the view for @ObservedObject classes, becuase an observed object is used to refresh the whole UI. If it gets instantiated inside the view, the object gets destroyed when the view(s) disappears. The object should live without the view.
 
 ```
+
 @ObservedObject var vm: ObservedObjectClass
+
 ```
 
 ### ObserableObject (Protocol)
@@ -1904,9 +1993,11 @@ A type of object with a publisher that emits before the object has changed. By d
 Gets value from the OS. <a src="https://developer.apple.com/documentation/swiftui/environmentvalues/">Full List</a>
 
 ```
+
 @Environment(\.dismiss) var dismiss
 @Environment(\.colorScheme) var colorScheme
 @Environment(\.verticalSizeClass) var vSizeClass
+
 ```
 
 ### EnvironmentObject
@@ -1941,10 +2032,10 @@ Problems with Coordinator
 
 ### Retain Cycle
 
-<br>
 To solve the issue, you need `weak` keyword.
 
 ```
+
 class Controller {
 var coordinator: Coordinator?
 
@@ -1963,24 +2054,28 @@ let controller = Controller()
     }
 
 }
+
 ```
 
 ### Infinite Loop
 
 ```
+
 class Controller {
-    var coordinator = Coordinator()
-    func doSomething() {
+var coordinator = Coordinator()
+func doSomething() {
 
     }
+
 }
 
 class Coordinator {
-    let controller = Controller()
+let controller = Controller()
 }
 
 let controller = Controller()
 controller.doSomething() // creates infinite loop
+
 ```
 
 In a complicated app, the app should have multiple coordinators for modules.
@@ -2000,10 +2095,11 @@ Simple test cases uses XCTest framework. Simple logics in ViewModels or controll
 In UIText cases, the actual api calls are created to navigate on the UI. No need to provide mock data/logic that Unit Tests do.
 
 ```
+
 import XCTest
 
 final class FirstSwiftUIProjectUITests: XCTestCase {
-    private var app: XCUIApplication! // Use "!" so that the class doesn't need to have an initializer.
+private var app: XCUIApplication! // Use "!" so that the class doesn't need to have an initializer.
 
     override func setUpWithError() throws {
         app = XCUIApplication()
@@ -2041,7 +2137,9 @@ final class FirstSwiftUIProjectUITests: XCTestCase {
             }
         }
     }
+
 }
+
 ```
 
 ### Test Driven Development
@@ -2050,14 +2148,120 @@ The development starts with the given test cases so that the code can pass all t
 
 # Design Pattern
 
+https://refactoring.guru/design-patterns
+
 1. Creational
    <br>Creating objects.
+   - Singleton
+   - Factory
+   - Builder
 2. Behaviroal
    <br>
    How you communicate between different objects such as delegate, closures, and Combine (publisher & subscriber).
 3. Structrual
    <br>
-   How to structure your code such as MVC, MVVM, MVVM-C, VIPER.
+   Adapter, Facade, Decorator, Proxy
+
+   ### Adapter
+
+   Similiar classes should comform to the same protocols so that they can be reused in different situations.
+   https://www.youtube.com/watch?v=S4ycTT_035Q
+
+   ### Facade
+
+   Making some of the functions or classes private becuase they might not be needed to be called or referenced oustide the scoope.
+   https://www.youtube.com/watch?v=BiD_Y1Gvz7I
+
+   ### Decorator
+
+   Nothing but Open-closed principle. An existing code should be expanded but not modified.
+
+   ```
+   import Foundation
+
+    protocol Car {
+        var upgrades: [String] { get }
+        var price: Int { get }
+    }
+
+    protocol CarDecorator: Car {
+        var car: Car { get }
+    }
+
+    struct BaseCar: Car {
+        var upgrades: [String] = ["Engine"]
+        var price: Int = 10_000
+    }
+
+    struct BaseWheels: CarDecorator {
+        var car: Car
+
+        var upgrades: [String] {
+            car.upgrades + ["Base Wheel"]
+        }
+
+        var price: Int {
+            car.price + 1_000
+        }
+
+    }
+
+    struct SportWheels: CarDecorator {
+        var car: Car
+
+        var upgrades: [String] {
+            car.upgrades + ["Sport Wheel"]
+        }
+
+        var price: Int {
+            car.price + 3_000
+        }
+
+    }
+
+    struct AirCondition: CarDecorator {
+        var car: Car
+
+        var upgrades: [String] {
+            car.upgrades + ["A"]
+        }
+
+        var price: Int {
+            car.price + 1_000
+        }
+
+    }
+
+    struct Autopilot: CarDecorator {
+        var car: Car
+
+        var upgrades: [String] {
+            car.upgrades + ["Autopilot"]
+        }
+
+        var price: Int {
+            car.price + 5_000
+        }
+    }
+
+    var car = BaseCar()
+    car.price
+
+    var sportCar = SportWheels(car: car)
+    sportCar.price
+
+    var acCar = AirCondition(car: sportCar)
+    acCar.price
+
+    var autopilotCar = Autopilot(car: acCar)
+    autopilotCar.price
+
+    autopilotCar.upgrades.forEach { print($0) }
+   ```
+
+### Proxy
+
+Instead of accessing objects directly, the client talks to the interface to make the necessary processes. In real life example, we uses the online bankikng system or ATM to transactions, we do not go into the physical bank account directly to do any of these.
 
 ## Singleton
 
@@ -2066,19 +2270,22 @@ It ensures that a class can only have one instance. It provides global access to
 1. Create singleton instance
 
 ```
+
 static let shared = ClassName()
+
 ```
 
 2. final class
 3. private initializer
 
 ```
+
 import Foundation
 
 final class AuthManager {
-    static let shared = AuthManager()
-    var authToken: String = ""
-    var isLoggedIn = false
+static let shared = AuthManager()
+var authToken: String = ""
+var isLoggedIn = false
 
     private init() {}
 
@@ -2091,7 +2298,9 @@ final class AuthManager {
         authToken = ""
         isLoggedIn = false
     }
+
 }
+
 ```
 
 ### Disadvantages of Singleton
@@ -2107,14 +2316,16 @@ UserDefaults/AppStorage should be used to store simple data such as isLoggedIn. 
 
 Used widely in the industry. The consept comes from a real factory in the industry which has mass production. Gives more options to customize each object.
 
-// Storyboard gives an abstraction
+Storyboard gives an abstraction
 
 ```
+
 func navigateToHome() {
-    let sb = UIStoryboard(name: "Main", bundle: nil)
-    let vc = sb.instantiateViewController(withIdentifieer: "abc")
-    self.navigationController.pushViewController(vc, animated: true)
+let sb = UIStoryboard(name: "Main", bundle: nil)
+let vc = sb.instantiateViewController(withIdentifieer: "abc")
+self.navigationController.pushViewController(vc, animated: true)
 }
+
 ```
 
 Create functions to get objects
@@ -2122,15 +2333,18 @@ Create functions to get objects
 With this pattern, it reduces the number of code and make functions reusable. It can hide complexity from others.
 
 ```
+
 func getLabelObjc(text: String = "", textColor: UIColor = .black, textAlignment: NSTextAlignment = .center, numberOfLines: Int = 0) -> UILabel {
-    let label = UILabel()
-    label.text = text
-    label.textColor = textColor
-    label.textAlignment = textAlignment
-    label.numberOfLines = numberOfLines
+let label = UILabel()
+label.text = text
+label.textColor = textColor
+label.textAlignment = textAlignment
+label.numberOfLines = numberOfLines
 
     return label
+
 }
+
 ```
 
 # Save Data Locally on iOS
@@ -2142,9 +2356,11 @@ None of the banking applications store data locally.
 1. UserDefault
 
 ```
+
 // singleton
 let userDefault = UserDefault.stanard
 userDefault.set
+
 ```
 
 Store token when the user logs in.
@@ -2157,11 +2373,12 @@ UserDefault data is removed when a user removes an app from the device.
    Apple does not make it public how the data is encryped. What will happen to the keychain data when you remove an app from your app? It will remain on the device.
 
 ```
+
 import SwiftUI
 
 struct KeyChainUserView: View {
-    @State var savedInfo: String = "None"
-    let passwordKey: String = "com.suguru.tokuda.myPassword"
+@State var savedInfo: String = "None"
+let passwordKey: String = "com.suguru.tokuda.myPassword"
 
     var body: some View {
         VStack(spacing: 20) {
@@ -2212,8 +2429,12 @@ struct KeyChainUserView: View {
 
         return "Error getting valu"
     }
+
 }
+
 ```
+
+https://github.com/Suguru-Tokuda/CoreDataKeyChainMapApp
 
 3. Plist (Property List)
    This is XML
@@ -2233,25 +2454,27 @@ struct KeyChainUserView: View {
 - ORM - Object Relational Model, which creates a layer between database and UI.
 - 4 main pillers or classes/Core Data Stack
 
-1. NSManagedObjectModel
+https://github.com/Suguru-Tokuda/Products
+
+1. `NSManagedObjectModel`
 
 - This represents ur model part/data part of application
 - This will have entities, attribues and relationships between multiple tables.
 - We can compare info about models and entities
 - This is a schema for ur database.
 
-2. NSManagedObjectContext
+2. `NSManagedObjectContext`
 
 - This is the part which deveoper will interact the most.
 - We will do actual save, delete, fetch, insert, operations.
 - This will keep a track of all the chanes made to this model.
 
-3. NSPersistantStoreCoordinator
+3. `NSPersistantStoreCoordinator`
 
 - It keeps in reference of NSManagedObjectModel and NSManagedObjectContext
 - It will coordinate with NSPersistanceStore to save all changes.
 
-4. NSPersistentStore
+4. `NSPersistentStore`
 
 - This is used to setup all model, context and StoreCoordinator at once.
 - It will hold the reference of all above.
@@ -2387,11 +2610,12 @@ The most significant difference between RunLoop.main and DispatchQueue.main is t
 User's permission is saved in UserDefault, but developers never access to the particular in this case. `CLLocationManager` gives the data.
 
 ```
+
 import CoreLocation
 
 class LocationManager: NSObject, ObservableObject {
-    @Published var currentLocation: CLLocation?
-    @Published var locationAuthorized: Bool = false
+@Published var currentLocation: CLLocation?
+@Published var locationAuthorized: Bool = false
 
     let locationManager = CLLocationManager()
 
@@ -2403,13 +2627,14 @@ class LocationManager: NSObject, ObservableObject {
         locationManager.startUpdatingLocation()
         locationManager.delegate = self
     }
+
 }
 
 extension LocationManager: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let latestLocation = locations.last else { return }
-        currentLocation = latestLocation
-    }
+func locationManager(\_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+guard let latestLocation = locations.last else { return }
+currentLocation = latestLocation
+}
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         switch manager.authorizationStatus {
@@ -2433,11 +2658,149 @@ extension LocationManager: CLLocationManagerDelegate {
             break
         }
     }
+
 }
 
 ```
 
 ## Application Security: SSL
+
+Make sure that the network connection is secure by comparing the public keys in certificates.
+
+1. Certificate Pinning
+2. Public Key Pinning
+
+# iOS Security
+
+https://auth0.com/blog/security-best-practices-in-ios/
+
+1.  Data Storage Security
+2.  Network Security
+3.  Jailbroken Device Detection
+4.  Development techniques or best Security practice
+5.  Code Security scans using Blackduck/Varacode sites
+6.  BioMetric
+
+## 1. Data Storage Security
+
+    a. Keychain - use this to store small sensitive data
+    b. UserDefaults/AppStorage - don't use this for sensitive data storage.
+    c. CoreData - you can use `SQLCipher` (3rd party framework)
+    d. SQLite with file protection levels (i.g. .completeFileProtection)
+    e. plist - to store tokens or api keys.
+    f. bundle - use complete file protection flag (i.g. .completeFileProtection) for writing files in your aoo
+    g. Cache/NSCache - you should not save for storing sensitive data
+
+    1.  The flow will remain encryped until user unlocks the devices.
+        // 1. File saving
+
+            ```
+            func saveFileWithProtection(data: Data) {
+                do {
+                    let bundle = Bundle(for: NetworkManager.self)
+                    let fileUrl = URL(string: "//xyz")!
+                    data.write(to: fileurl, options: .completeFileProtection)
+
+                } catch {
+
+                }
+            }
+
+            ```
+
+## 2. Network Security
+
+A. SSL Pinning - It is a mechanism used to ensure the authenticity and integrity if server certificates during api calls are valid or not.
+
+1. Certificate Pinning
+2. Public key pinning
+
+   a. Public key - from server
+   b. Using this public key, genrate to token (App) and the device stores the key into keychain.
+   c. Send this generated token to server
+   d. Server will decrypto this token with their private key
+   e. If this is successful then server will send all further data.
+
+````
+
+private func func publicKeyHash(publicKey: SecKey) -> String? {
+guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) else {
+return nil
+}
+
+       let sha256Buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(CC_SHA256_DIGEST_LENGTH))
+       defer { sha256Buffer.deallocate() }
+
+       CC_SHA256((publicKeyData as Data).withUnsafeBytes { $0.baseAddress }, CC_LONG(publicKeyData.count), sha256Buffer)
+
+       let hashData = Data(bytes: sha256Buffer, count: Int(CC_SHA256_DIGEST_LENGTH))
+
+       return hashData.map { String(format: "%02hhx", $0) }.joined()
+
+}
+
+```
+
+1. Alamorefier SSL Pinning
+2. TrustKit
+3. TrustKit with Alamofire
+
+ATS - App Transport Security
+-- ATS will only allow https connections in app
+
+https://github.com/Suguru-Tokuda/SSLPinning
+
+## 3. Authentiation Frameworks
+
+1. JWT - Java Web Tokens (stored in key chain or plist)
+2. OAuth / OAuth2.0 - most commonly used Industry standard auth framework: requires third party framework.
+3. OKTA: requires third party framework
+4. Apple Sign in
+5. Firebase Authentication
+6. AWS Authentication
+
+### OAuth 2.0
+
+Has Access Token and Refresh Token
+
+## 4. CryptoKit Framework - iOS 13 (2019)
+
+```
+
+import CommonCrypto // iOS 10 ~
+import CryptoKit // iOS 13 ~
+
+func saveDataUsingCryptoKit() -> Any? {
+let dataToEncrypt = "Test Data".data(using: .utf8)
+if let data = dataToEncrypt {
+let data256 = SHA256.hash(data: data)
+let data284 = SHA384.hash(data: data)
+let data512 = SHA512.hash(data: data)
+
+        return data256
+    } else {
+        return nil
+    }
+
+}
+
+```
+
+## 5.Code Obfuscation
+
+Make the code impossible to read.
+
+## 6. JialBroken Protection
+
+No code runs if the phone is JailBroken.
+
+https://github.com/Suguru-Tokuda/Biometrics
+
+## Blackduck/Varacode
+
+After creating an Archive file for the app, you can scan it
+
+### Charles Proxy
 
 ### URLSessionDelegate
 
@@ -2450,10 +2813,16 @@ extension LocationManager: CLLocationManagerDelegate {
 - TestFlight Internal Only: Send notifications to internal users for testing.
 - Release Testing:
 
+1. Select Any iOS Devices
+2. Product
+3. Archive
+
 ## Debugging Console
 
 ```
+
 po urlString
+
 ```
 
 ## SOLID Principles
@@ -2467,52 +2836,57 @@ po urlString
    - Protocol: Decoupled
 
 ```
+
 protocol DataPersistence {
-    func save(filename: String)
+func save(filename: String)
 }
 
 protocol InvoicePersistenceProtocol {
-    func save(filename: String)
+func save(filename: String)
 }
 
 class FilePersistence: InvoicePersistenceProtocol {
-    let invoice: Invoice
+let invoice: Invoice
 
-    init(invoice: Invoice) {
-        self.invoice = invoice
-    }
+       init(invoice: Invoice) {
+           self.invoice = invoice
+       }
 
-    func save(filename: String) {
-        // save to file
-    }
+       func save(filename: String) {
+           // save to file
+       }
+
 }
 
 class DatabasePersistance: InvoicePersistenceProtocol {
-    let invoice: Invoice
+let invoice: Invoice
 
-    init(invoice: Invoice) {
-        self.invoice = invoice
-    }
+       init(invoice: Invoice) {
+           self.invoice = invoice
+       }
 
-    func save(filename: String) {
-        // save to database
-    }
+       func save(filename: String) {
+           // save to database
+       }
+
 }
+
 ```
 
 3. Liskov Substituion
-   <br>
-   Functions that use pointers or reference to base classes must be able to use objects of derived classes without knowing it.
+<br>
+Functions that use pointers or reference to base classes must be able to use objects of derived classes without knowing it.
 
 ```
+
 class Square: Rectangle {
-    init(size: Int) {
-        super.init(width: size, height: size)
-    }
+init(size: Int) {
+super.init(width: size, height: size)
+}
 }
 
 func getGetTestArea(shape: Rectangle) {
-    print(shape.getArea())
+print(shape.getArea())
 }
 
 // call
@@ -2521,30 +2895,33 @@ getTestArea(shape: rect)
 
 let square = Square(size: 10)
 getTestArea(shape: square)
+
 ```
 
 4. Interface Segregation
-   You should not make all the types that comformes to the protocol implement functions that are not used.
+You should not make all the types that comformes to the protocol implement functions that are not used.
 
 5. Dependency Inversion
-   <br>
-   High-level modules should not depend on low-level modules both should depend on Abstractions. (Abstractions should not depend upon details. Details should depend upon abstractions)
+<br>
+High-level modules should not depend on low-level modules both should depend on Abstractions. (Abstractions should not depend upon details. Details should depend upon abstractions)
 
 ```
+
 class FileSystemManager {
-    func save(string: String) {
-        // Open a file
-        // Save the string in this file
-        // Close the file
-   }
+func save(string: String) {
+// Open a file
+// Save the string in this file
+// Close the file
+}
 }
 
 class Handler {
-    let fileManager = FilesystemManager()
-    func handle(string: String) {
-        fileManager.save(string: string)
-    }
+let fileManager = FilesystemManager()
+func handle(string: String) {
+fileManager.save(string: string)
 }
+}
+
 ```
 
 **FileSystemManager** is the low-level module and it's easy to reuse in other projects. The problem is the high-level module **Handler** which is not reusable because is tightly coupled with **FileSystemManager**. We should be able to reuse the high-level module with different kind of storages like a database, clod, and so on.
@@ -2552,72 +2929,85 @@ class Handler {
 We can solve this dependency using protocol Storage. In this way, **Handler** can use this abstract protocol without caring for the kind of storage used. With this approach, we can change easily from a filesystem to a database.
 
 ```
+
 protocol Storage {
-    func save(string: String)
+func save(string: String)
 }
 
 class FileSystemManager: Storage {
-    func save(string: String) {
-        // Open a file in read-mode
-        // Save the string in this file
-        // Close the file
-    }
+func save(string: String) {
+// Open a file in read-mode
+// Save the string in this file
+// Close the file
+}
 }
 
 class DatabaseManager: Storage {
-    func save(string: String) {
-        // Connect to the database
-        // Execute the query to save the string in a table
-        // Close the connection
-    }
+func save(string: String) {
+// Connect to the database
+// Execute the query to save the string in a table
+// Close the connection
+}
 }
 
 class Handler {
-    let storage: Storage
-    // Storage types
-    init(storage: Storage) {
-        self.storage = storage
-    }
+let storage: Storage
+// Storage types
+init(storage: Storage) {
+self.storage = storage
+}
 
-    func handle(string: String) {
-        storage.save(string: string)
-    }
+       func handle(string: String) {
+           storage.save(string: string)
+       }
+
 }
 
 protocol Storage {
-    func save(string: String)
+func save(string: String)
 }
 
 class FileSystemManager: Storage {
-    func save(string: String) {
-        // Open a file in read-mode
-        // Save the string in this file
-        // Close the file
-    }
+func save(string: String) {
+// Open a file in read-mode
+// Save the string in this file
+// Close the file
+}
 }
 
 class DatabaseManager: Storage {
-    func save(string: String) {
-        // Connect to the database
-        // Execute the query to save the string in a table
-        // Close the connection
-    }
+func save(string: String) {
+// Connect to the database
+// Execute the query to save the string in a table
+// Close the connection
+}
 }
 
 class Handler {
-    let storage: Storage
-    // Storage types
-    init(storage: Storage) {
-        self.storage = storage
-    }
-
-    func handle(string: String) {
-        storage.save(string: string)
-    }
+let storage: Storage
+// Storage types
+init(storage: Storage) {
+self.storage = storage
 }
+
+       func handle(string: String) {
+           storage.save(string: string)
+       }
+
+}
+
 ```
 
 **Dependency Inversion Principle** is very similar to the **Open-Closed Principle** the approach to use, to hae a clean architecture, is decoupling the dependencies. You can achieve it abstract layers.
+
+# Architecture
+
+1. MVC
+2. MVVM
+3. MVVMC
+4. VIP
+5. MVP
+6. VIPER
 
 # Clean Architecture
 
@@ -2628,3 +3018,51 @@ class Handler {
 ### Scrum Master
 
 Communicates with the stakeholders and manage expectations.
+
+### CICD - Continuous Integration, Continuous Deployment
+
+ 1. Create a branch from development
+
+ Continuous Integration
+ 2. Development
+ 3. Test Cases
+ 4. Create a PR
+ 5. Merge the PR
+
+ Continuous Deployment
+ 6. Upload a build to testflight
+ 7. AppStore
+
+ Jenkins
+ Download the code and automatically run tests.
+ https://medium.com/edureka/jenkins-tutorial-68110a2b4bb3
+
+ Fastlane
+ https://fastlane.tools/
+
+ 1. Jenkins
+ 2. AzureCLI
+ 3. CircleCI
+ 4. Bitrise
+ 5. Hudson
+ 6. Github Actions
+
+ Steps
+ 1. Checkout
+ 2. Build
+ 3. Test
+ 4. Deploy
+
+ Readings:
+ - https://medium.com/@elenipapanikolo/integrating-ci-cd-for-multiple-environments-with-jenkins-fastlane-part-1-2-6e12b1ea5578
+ - https://itnext.io/jenkins-tutorial-part-10-work-with-git-in-pipeline-b5e42f6d124b
+```
+
+```
+
+```
+
+```
+
+```
+````

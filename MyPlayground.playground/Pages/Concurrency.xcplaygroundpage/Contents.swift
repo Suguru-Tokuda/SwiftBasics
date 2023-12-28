@@ -2,6 +2,9 @@
 
 import Foundation
 
+let currentTimestamp = Int(Date().timeIntervalSince1970)
+print(currentTimestamp)
+
 /*
  Concurrency / MultiThreading
  1. GCD - Grand Central Dispatch
