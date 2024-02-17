@@ -1104,40 +1104,31 @@ func timer(completion: @escaping () -> ()) {
 The closure gets called because isEscaping is true
 
 ```
-
 escapingClosure(val: 6, complesion: { val in
     print(val)
 }, isEscaping: true)
-
 ```
 
 The closure never gets called
 
 ```
-
 escapingClosure(val: 4, complesion: { val in
     print(val) // never gets executed
 }, isEscaping: false)
-
 ```
 
 `Trailig closure`: the closure that is at the end of the function parameter
 
 ```
-
 func trailingClosure(val: String, \_ completion: (String) -> Void) {
     print(val)
 }
-
-
 ```
 
 Calling a closure func with short hand.
 
 ```
-
 trailingClosure(val: "This is an example of a trailing closure") { print($0) }
-
 ```
 
 `Auto Closure`: a type of closure without any paramter. Used as a call back.
@@ -1176,57 +1167,48 @@ Higher order functions take a collection. The caller can use a custom function (
 1. `map`: takes a collection and return a collection
 
 ```
-
 var randomNums: [Int] = []
 for i in 0..<100 {
-// add random num
-randomNums.append(Int.random(in: 1..<100))
+    // add random num
+    randomNums.append(Int.random(in: 1..<100))
 }
 
 let randomNumsPlusOne = randomNums.map { $0 + 1 } // add 1 to every number from randomNums and assign the return value to a constant.
 print(randomNumsPlusOne)
-
 ```
 
 2. `filter`: filters a collection for the condition specified inside a closure.
 
 ```
-
 let numsOver50 = randomNums.filter { $0 > 50 } // filter numbers that are greater than 50
 print(numsOver50)
-
 ```
 
 3. `reduce`: reduce function temporarily stores a value and applies the specified operation for each element.
 
 ```
-
 let sumOfRandomNums = randomNums.reduce(0, +)
 // equivalent but set the initial value to 100
 let sumOfRandomNums2 = randomNums.reduce(100) { partialResult, num in
-partialResult + num
+    partialResult + num
 }
 print(sumOfRandomNums)
 print(sumOfRandomNums2) // 100 greater than sumOfRandomNums
-
 ```
 
 4. `sort`
 
 ```
-
 let randomNumsSortAsc = randomNums.sorted(by: { $0 < $1 })
 let randomNumsSortDesc = randomNums.sorted(by: { $0 > $1 })
 
 print(randomNumsSortAsc)
 print(randomNumsSortDesc)
-
 ```
 
 5. `flatMap`
 
 ```
-
 let nums: [[Int]] = [[1,2,3], [4,5,6]]
 let flatNums = nums.flatMap { $0.count } // instead of returning all numbers, return count for individual array inside the multi dimensional array.
 print(flatNums)
@@ -1235,40 +1217,33 @@ let wordList: [String] = ["Hello", "World"]
 let flattenedWordListLower: [Character] = wordList.flatMap { $0.lowercased() } // converts a String array into a Character array. During the operation all the cases are lowered.
 
 print(flattenedWordListLower)
-
 ```
 
 6. `compactMap`: used to remove all nils inside a collection.
 
 ```
-
 let optionalNums: [Int?] = [1, 2, 3, 4, nil, 6, nil, 8, 9]
 let nonOptionalNums = optionalNums.compactMap { $0 }
 
 print(nonOptionalNums) // only non optional values are returned.
-
 ```
 
 7. `forEach`: iterate through a collection. Similiar to for item in items { block of code }
 
 ```
-
 var sum: Int = 0
 randomNums.forEach { sum += $0 } // can be used in different sinarios by looping through every object, however, unlike for loop, break cannot be called inside forEach.
-
 ```
 
 8. `zip`: combine two arrays into tuples
 
 ```
-
 let petOwners = ["Mike", "Sarah", "Kat"]
 let pets = ["Leo", "Tiger", "Mao", "Hello"]
 
 for (owner, pet) in zip(petOwners, pets) {
-print("\(owner) owns \(pet)")
+    print("\(owner) owns \(pet)")
 }
-
 ```
 
 ## Dependency Injection
@@ -1292,13 +1267,11 @@ Error handlign in Swift starts with creating an enum which conforms to Error pro
    The best way to handle errors in swift, becuase every error can be handled in the catch clause
 
 ```
-
 do {
 try // function call
 } catch let error {
 // handle here
 }
-
 ```
 
 2. `try?`
@@ -1327,11 +1300,10 @@ Automatic Reference Counting (Garbage collection in Java; simliar but not the sa
 - It keeps a track of reference to objects and releases them when they are not needed.
 
 ```
-
 class Person {
-var name: String // strong reference: ARC will work on collecting unused references and clears.
-var age: Int? // strong
-weak var car: Car? // weak reference
+    var name: String // strong reference: ARC will work on collecting unused references and clears.
+    var age: Int? // strong
+    weak var car: Car? // weak reference
 
     init(name: String, age: Int) {
         self.name = name
@@ -1348,46 +1320,36 @@ weak var car: Car? // weak reference
         self.age = nil
         self.car = nil
     }
-
 }
-
 ```
 
 reference count = 0 before initialization
 
 ```
-
 // the following code created a reference and trigerred an initializer.
 var person: Person? = Person(name: "SwiftUI", age: 4)
-
 ```
 
 reference count = 1 after initialization
 
 ```
-
 var person2 = person // strong reference
-
 ```
 
 reference count = 2
 it is better to remove an object by assigning nil
 
 ```
-
 //person = nil // 2 - 1 = 1
 //person2 = nil // 1 - 1 = 0
-
 ```
 
 deinit never gets called until all the references are removed.
 reference count = 0 after deinitialization
 
 ```
-
 print(person) // nil
 print(person2) // nil
-
 ```
 
 ### Retain Cycle Issue
@@ -1396,16 +1358,15 @@ Retain Cycle Issue happens if two classes having strong reference to each other.
 
 In real life example for weak reference:
 
-1. API calls.
+1. API calls: escaping closures.
 2. Class delegate
 3. Constructor dependency injection
 
 ```
-
 class Person {
-var name: String // strong reference: ARC will work on collecting unused references and clears.
-var age: Int? // strong
-var car: Car? // weak reference
+    var name: String // strong reference: ARC will work on collecting unused references and clears.
+    var age: Int? // strong
+    var car: Car? // weak reference
 
     init(name: String, age: Int) {
         self.name = name
@@ -1422,12 +1383,11 @@ var car: Car? // weak reference
         self.age = nil
         self.car = nil
     }
-
 }
 
 class Car {
-var type: String
-var owner: Person?
+    var type: String
+    var owner: Person?
 
     init(type: String) {
         self.type = type
@@ -1442,52 +1402,44 @@ var owner: Person?
         print("deinit Car")
         self.owner = nil
     }
-
 }
-
 ```
 
 Create `Person` and `Car` objects then assign `car` to `owner`, `owner` to `car` objects.
 
 ```
-
 var person: Person? = Person(name: "SwiftUI", age: 4)
 var car: Car? = Car(type: "Cumbustion")
 
 person?.car = car
 car?.owner = person
-
 ```
 
 deinit is not called in `Person` and `Car` class because Person and Car class have `strong reference` to each other.
 
 ```
-
 car = nil
 person = nil
-
 ```
 
 Prep code for references
 
 ```
-
 class Vehicle {
-var make: String
-var model: String
-var year: Int
+    var make: String
+    var model: String
+    var year: Int
 
     init(make: String, model: String, year: Int) {
         self.make = make
         self.model = model
         self.year = year
     }
-
 }
 
 class Engine {
-var hoursePower: Int
-var car: Vehicle?
+    var hoursePower: Int
+    var car: Vehicle?
 
     init(hoursePower: Int) {
         self.hoursePower = hoursePower
@@ -1500,8 +1452,8 @@ var car: Vehicle?
 }
 
 class Break {
-var breakingPower: Int
-var car: Vehicle?
+    var breakingPower: Int
+    var car: Vehicle?
 
     init(breakingPower: Int) {
         self.breakingPower = breakingPower
@@ -1512,7 +1464,6 @@ var car: Vehicle?
     }
 
 }
-
 ```
 
 ### strong reference
@@ -1520,10 +1471,9 @@ var car: Vehicle?
 The default reference type to keep objects alive as long as they are being used.
 
 ```
-
 class HatchBack : Vehicle {
-var engine: Engine?
-var vehicleBreak: Break?
+    var engine: Engine?
+    var vehicleBreak: Break?
 
     override init(make: String, model: String, year: Int) {
         super.init(make: make, model: model, year: year)
@@ -1534,13 +1484,10 @@ var vehicleBreak: Break?
         self.engine = nil
         self.vehicleBreak = nil
     }
-
 }
-
 ```
 
 ```
-
 var engine: Engine? = Engine(hoursePower: 250)
 var vehicleBreak: Break? = Break(breakingPower: 50)
 
@@ -1551,7 +1498,6 @@ vehicleBreak?.car = civic
 
 civic?.engine = engine
 civic?.vehicleBreak = vehicleBreak
-
 ```
 
 ### weak reference
@@ -1854,7 +1800,7 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
 1. Not running, unattached state
 2. Foreground
 3. Background
-4. Suspended: stops everything in the app.
+4. Suspended: stops everything in the app. The app goes into inacive then suspended state.
 5. Terminated state
 
 ### AppDelegate life cycle
@@ -1881,7 +1827,7 @@ Simlar to weak, but unowned variable should always have data otherwise the app w
   This event creates the view that the controller manages. It is only called when the view controller is created programatically. You can override this method in order to create your views manually. If you are working with storyboards or nib files, then you do not have to do anything with this method and you can ignore it.
 - `loadViewIfNeeded()`
   <br>
-  Lods the view controller's view if it has not already been set. Available from iOS >= 9.0.
+  Loads the view controller's view if it has not already been set. Available from iOS >= 9.0.
 - `viewDidLoad()`
   <br>
   Called after the view has been loaded. For view controllers created in code, this is after -loadView. For view controllers unarchived from a nib, this is after the view is set. Use this method to initialize setup of the interface.
@@ -1956,7 +1902,7 @@ In SwiftUI, views are structs. In UIKit, everything was declared as class (refer
 6. ObservableObject
 7. @Environment
 8. @EnvironmentObject
-9. @Appstorage
+9. @AppStorage
 10. @Fetch
 
 ### State
@@ -2037,22 +1983,20 @@ To solve the issue, you need `weak` keyword.
 ```
 
 class Controller {
-var coordinator: Coordinator?
+    var coordinator: Coordinator?
 
     func doSomething() {
 
     }
-
 }
 
 class Coordinator {
-let controller = Controller()
+    let controller = Controller()
 
     func navigationToHome() {
         let controller = Controller()
         controller.coordinator = self
     }
-
 }
 
 ```
@@ -2062,15 +2006,15 @@ let controller = Controller()
 ```
 
 class Controller {
-var coordinator = Coordinator()
-func doSomething() {
+    var coordinator = Coordinator()
+
+    func doSomething() {
 
     }
-
 }
 
 class Coordinator {
-let controller = Controller()
+    let controller = Controller()
 }
 
 let controller = Controller()
@@ -2137,7 +2081,6 @@ private var app: XCUIApplication! // Use "!" so that the class doesn't need to h
             }
         }
     }
-
 }
 
 ```
@@ -2283,9 +2226,9 @@ static let shared = ClassName()
 import Foundation
 
 final class AuthManager {
-static let shared = AuthManager()
-var authToken: String = ""
-var isLoggedIn = false
+    static let shared = AuthManager()
+    var authToken: String = ""
+    var isLoggedIn = false
 
     private init() {}
 
@@ -2298,7 +2241,6 @@ var isLoggedIn = false
         authToken = ""
         isLoggedIn = false
     }
-
 }
 
 ```
@@ -2319,13 +2261,11 @@ Used widely in the industry. The consept comes from a real factory in the indust
 Storyboard gives an abstraction
 
 ```
-
 func navigateToHome() {
-let sb = UIStoryboard(name: "Main", bundle: nil)
-let vc = sb.instantiateViewController(withIdentifieer: "abc")
-self.navigationController.pushViewController(vc, animated: true)
+    let sb = UIStoryboard(name: "Main", bundle: nil)
+    let vc = sb.instantiateViewController(withIdentifieer: "abc")
+    self.navigationController.pushViewController(vc, animated: true)
 }
-
 ```
 
 Create functions to get objects
@@ -2333,18 +2273,15 @@ Create functions to get objects
 With this pattern, it reduces the number of code and make functions reusable. It can hide complexity from others.
 
 ```
-
 func getLabelObjc(text: String = "", textColor: UIColor = .black, textAlignment: NSTextAlignment = .center, numberOfLines: Int = 0) -> UILabel {
-let label = UILabel()
-label.text = text
-label.textColor = textColor
-label.textAlignment = textAlignment
-label.numberOfLines = numberOfLines
+    let label = UILabel()
+    label.text = text
+    label.textColor = textColor
+    label.textAlignment = textAlignment
+    label.numberOfLines = numberOfLines
 
     return label
-
 }
-
 ```
 
 # Save Data Locally on iOS
@@ -2356,11 +2293,9 @@ None of the banking applications store data locally.
 1. UserDefault
 
 ```
-
 // singleton
 let userDefault = UserDefault.stanard
 userDefault.set
-
 ```
 
 Store token when the user logs in.
@@ -2373,12 +2308,11 @@ UserDefault data is removed when a user removes an app from the device.
    Apple does not make it public how the data is encryped. What will happen to the keychain data when you remove an app from your app? It will remain on the device.
 
 ```
-
 import SwiftUI
 
 struct KeyChainUserView: View {
-@State var savedInfo: String = "None"
-let passwordKey: String = "com.suguru.tokuda.myPassword"
+    @State var savedInfo: String = "None"
+    let passwordKey: String = "com.suguru.tokuda.myPassword"
 
     var body: some View {
         VStack(spacing: 20) {
@@ -2431,7 +2365,6 @@ let passwordKey: String = "com.suguru.tokuda.myPassword"
     }
 
 }
-
 ```
 
 https://github.com/Suguru-Tokuda/CoreDataKeyChainMapApp
@@ -2474,7 +2407,7 @@ https://github.com/Suguru-Tokuda/Products
 - It keeps in reference of NSManagedObjectModel and NSManagedObjectContext
 - It will coordinate with NSPersistanceStore to save all changes.
 
-4. `NSPersistentStore`
+4. `NSPersistentContainer`
 
 - This is used to setup all model, context and StoreCoordinator at once.
 - It will hold the reference of all above.
@@ -2506,6 +2439,131 @@ https://github.com/Suguru-Tokuda/Products
 - This is only in Objective-C
 
 <img src="Sources/core-data-stack.jpeg" width="700">
+
+### Core Animation (UIKit)
+
+https://github.com/jrasmusson/swift-arcade/tree/master/Animation/CoreAnimation/Intro
+
+**Model Layer**
+What the shapek like now
+
+**Presentation Layer**
+What the shape looks while animating
+
+- keyPath
+- values
+- keyTimes:
+- duration: how long the animation takes to finish
+
+Move
+
+```
+import UIKit
+
+class ViewController: UIViewController {
+    let redView = UIView(frame: CGRect(x: 20, y: 100, width: 140, height: 100))
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        redView.backgroundColor = .systemRed
+        view.addSubview(redView)
+        animate()
+    }
+
+    func animate() {
+        let animation = CABasicAnimation()
+        animation.keyPath = "position.x"
+        animation.fromValue = 20 + 140/2
+        animation.toValue = 300
+        animation.duration = 1
+
+        redView.layer.add(animation, forKey: "basic")
+        redView.layer.position = CGPoint(x: 300, y: 100 + 100/2) // update to final position
+    }
+}
+```
+
+Rotation
+
+```
+import UIKit
+
+class ViewController: UIViewController {
+    let redView = UIView()
+    let _width: CGFloat = 140
+    let _height: CGFloat = 100
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        redView.backgroundColor = .systemRed
+        view.addSubview(redView)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        redView.frame = CGRect(x: view.bounds.midX - _width / 2,
+                               y: view.bounds.midY - _height / 2,
+                               width: _width,
+                               height: _height)
+
+        animate()
+    }
+
+    func animate() {
+        let animation = CABasicAnimation()
+        animation.keyPath = "transform.scale"
+        animation.fromValue = 0
+        animation.toValue = CGFloat.pi / 4
+        animation.duration = 1
+
+        redView.layer.add(animation, forKey: "basic")
+//        redView.layer.transform = CATransform3DMakeScale(2, 2, 1)
+        redView.layer.transform = CATransform3DMakeRotation(CGFloat.pi / 4, 0, 0, 1)
+    }
+}
+
+```
+
+Shake
+
+```
+import UIKit
+
+class ViewController: UIViewController {
+    let redView = UIView()
+    let _width: CGFloat = 140
+    let _height: CGFloat = 100
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        redView.backgroundColor = .systemRed
+        view.addSubview(redView)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        redView.frame = CGRect(x: view.bounds.midX - _width / 2,
+                               y: view.bounds.midY - _height / 2,
+                               width: _width,
+                               height: _height)
+
+        animate()
+    }
+
+    func animate() {
+        let animation = CAKeyframeAnimation()
+        animation.keyPath = "position.x"
+        animation.values = [0, 10, -10, 10, 0]
+        animation.keyTimes = [0, 0.16, 0.5, 0.83, 1]
+        animation.duration = 0.4
+
+        animation.isAdditive = true
+        redView.layer.add(animation, forKey: "shake")
+    }
+}
+```
 
 ### Migration
 
@@ -2573,6 +2631,97 @@ Keywords:
 5. Multi-threading
 6. Multiplatform - except for Linux
 
+## PassthroughSubject
+
+`PassthroughSubject` does not have initial value.
+
+```
+struct ChatRoom {
+    enum Error: Error {
+        case missingConnection
+    }
+
+    let subject = PassthroughSubject<String, Error>()
+
+    func simulateMessage() {
+        subject.send("Hello!")
+    }
+
+    func simulateNetworkError() {
+        subject.send(completion: .failure(.missingConnection))
+    }
+
+    func closeRoom() {
+        subject.send("Chat room closed")
+        subject.send(completion: .finished)
+    }
+}
+
+
+let chatRoom = ChatRoom()
+
+chatRoom.subject.sink { completion in
+    switch completion {
+    case .finished:
+        print("Received finished")
+    case .failure(let error):
+        print("Received error: \(error)")
+    }
+} receivedValue: { message in
+    print("Received message: \(message)")
+}
+
+chatRoom.simulateMessage()
+chatRoom.closeRoom()
+```
+
+## CurrentValueSubject
+
+Similar to `PassthroughSubject` but it must have initial value.
+
+```
+struct Uploader {
+    enum State {
+        case pending, uploading, finished
+    }
+
+    enum Error: Error {
+        case uploadFailed
+    }
+
+    let subject = CurrentValueSubject<State, Error>(.pending)
+
+    func startUpload() {
+        subject.send(.uploading)
+    }
+
+    func finishedUpload() {
+        subject.value = .finished
+        subject.send(completion: .finished)
+    }
+
+    func failUpload() {
+        subject.send(completion: .failure(.uploading))
+    }
+}
+
+
+let uploader = Uploader()
+uploader.subject.sink { completion in
+    switch completion {
+    case .finished:
+        print("Received finished")
+    case .failure(let error):
+        print("Received error: \(error)")
+    }
+} receiveValue: { message in
+    print("Reieved message: \(message)")
+}
+
+uploader.startUpload()
+uploader.finishUpload()
+```
+
 Before Combine, RXSwift (https://github.com/ReactiveX/RxSwift) (3rd party framework) was used.
 
 ### RunLoop
@@ -2610,12 +2759,11 @@ The most significant difference between RunLoop.main and DispatchQueue.main is t
 User's permission is saved in UserDefault, but developers never access to the particular in this case. `CLLocationManager` gives the data.
 
 ```
-
 import CoreLocation
 
 class LocationManager: NSObject, ObservableObject {
-@Published var currentLocation: CLLocation?
-@Published var locationAuthorized: Bool = false
+    @Published var currentLocation: CLLocation?
+    @Published var locationAuthorized: Bool = false
 
     let locationManager = CLLocationManager()
 
@@ -2631,9 +2779,9 @@ class LocationManager: NSObject, ObservableObject {
 }
 
 extension LocationManager: CLLocationManagerDelegate {
-func locationManager(\_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-guard let latestLocation = locations.last else { return }
-currentLocation = latestLocation
+    func locationManager(\_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    guard let latestLocation = locations.last else { return }
+    currentLocation = latestLocation
 }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -2658,9 +2806,7 @@ currentLocation = latestLocation
             break
         }
     }
-
 }
-
 ```
 
 ## Application Security: SSL
@@ -2683,13 +2829,13 @@ https://auth0.com/blog/security-best-practices-in-ios/
 
 ## 1. Data Storage Security
 
-    a. Keychain - use this to store small sensitive data
-    b. UserDefaults/AppStorage - don't use this for sensitive data storage.
-    c. CoreData - you can use `SQLCipher` (3rd party framework)
-    d. SQLite with file protection levels (i.g. .completeFileProtection)
-    e. plist - to store tokens or api keys.
-    f. bundle - use complete file protection flag (i.g. .completeFileProtection) for writing files in your aoo
-    g. Cache/NSCache - you should not save for storing sensitive data
+a. Keychain - use this to store small sensitive data
+b. UserDefaults/AppStorage - don't use this for sensitive data storage.
+c. CoreData - you can use `SQLCipher` (3rd party framework)
+d. SQLite with file protection levels (i.g. .completeFileProtection)
+e. plist - to store tokens or api keys.
+f. bundle - use complete file protection flag (i.g. .completeFileProtection) for writing files in your aoo
+g. Cache/NSCache - you should not save for storing sensitive data
 
     1.  The flow will remain encryped until user unlocks the devices.
         // 1. File saving
@@ -2721,24 +2867,22 @@ A. SSL Pinning - It is a mechanism used to ensure the authenticity and integrity
    d. Server will decrypto this token with their private key
    e. If this is successful then server will send all further data.
 
-````
+```
 
 private func func publicKeyHash(publicKey: SecKey) -> String? {
-guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) else {
-return nil
+    guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) else {
+        return nil
+    }
+
+    let sha256Buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(CC_SHA256_DIGEST_LENGTH))
+    defer { sha256Buffer.deallocate() }
+
+    CC_SHA256((publicKeyData as Data).withUnsafeBytes { $0.baseAddress }, CC_LONG(publicKeyData.count), sha256Buffer)
+
+    let hashData = Data(bytes: sha256Buffer, count: Int(CC_SHA256_DIGEST_LENGTH))
+
+    return hashData.map { String(format: "%02hhx", $0) }.joined()
 }
-
-       let sha256Buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(CC_SHA256_DIGEST_LENGTH))
-       defer { sha256Buffer.deallocate() }
-
-       CC_SHA256((publicKeyData as Data).withUnsafeBytes { $0.baseAddress }, CC_LONG(publicKeyData.count), sha256Buffer)
-
-       let hashData = Data(bytes: sha256Buffer, count: Int(CC_SHA256_DIGEST_LENGTH))
-
-       return hashData.map { String(format: "%02hhx", $0) }.joined()
-
-}
-
 ```
 
 1. Alamorefier SSL Pinning
@@ -2808,6 +2952,15 @@ After creating an Archive file for the app, you can scan it
 
 ## Pushing Your App to AppStore
 
+1. Code Signin: Create an iOS distribution provisioning profile and distribution certificate. (on
+   Xcode)
+2. Create an App sotre connect record for your app
+3. (Paid app only) Sign for the contract and terms of payment
+4. Add a new app
+5. Archive and upload your app using Xcode: Make sure to clic on **TestFlight & AppStore**
+6. Configure app's metadata and further details in its App Store Connect record
+7. Submit your app for review
+
 - Download Debug Symbols
 - TestFlight & App Store: Send notifications to agreed users for testing.
 - TestFlight Internal Only: Send notifications to internal users for testing.
@@ -2838,15 +2991,15 @@ po urlString
 ```
 
 protocol DataPersistence {
-func save(filename: String)
+    func save(filename: String)
 }
 
 protocol InvoicePersistenceProtocol {
-func save(filename: String)
+    func save(filename: String)
 }
 
 class FilePersistence: InvoicePersistenceProtocol {
-let invoice: Invoice
+    let invoice: Invoice
 
        init(invoice: Invoice) {
            self.invoice = invoice
@@ -2855,38 +3008,36 @@ let invoice: Invoice
        func save(filename: String) {
            // save to file
        }
-
 }
 
 class DatabasePersistance: InvoicePersistenceProtocol {
-let invoice: Invoice
+    let invoice: Invoice
 
-       init(invoice: Invoice) {
-           self.invoice = invoice
-       }
+    init(invoice: Invoice) {
+        self.invoice = invoice
+    }
 
-       func save(filename: String) {
-           // save to database
-       }
-
+    func save(filename: String) {
+        // save to database
+    }
 }
 
 ```
 
 3. Liskov Substituion
-<br>
-Functions that use pointers or reference to base classes must be able to use objects of derived classes without knowing it.
+   <br>
+   Functions that use pointers or reference to base classes must be able to use objects of derived classes without knowing it.
 
 ```
 
 class Square: Rectangle {
-init(size: Int) {
-super.init(width: size, height: size)
-}
+    init(size: Int) {
+        super.init(width: size, height: size)
+    }
 }
 
 func getGetTestArea(shape: Rectangle) {
-print(shape.getArea())
+    print(shape.getArea())
 }
 
 // call
@@ -2899,27 +3050,27 @@ getTestArea(shape: square)
 ```
 
 4. Interface Segregation
-You should not make all the types that comformes to the protocol implement functions that are not used.
+   You should not make all the types that comformes to the protocol implement functions that are not used.
 
 5. Dependency Inversion
-<br>
-High-level modules should not depend on low-level modules both should depend on Abstractions. (Abstractions should not depend upon details. Details should depend upon abstractions)
+   <br>
+   High-level modules should not depend on low-level modules both should depend on Abstractions. (Abstractions should not depend upon details. Details should depend upon abstractions)
 
 ```
 
 class FileSystemManager {
-func save(string: String) {
-// Open a file
-// Save the string in this file
-// Close the file
-}
+    func save(string: String) {
+    // Open a file
+    // Save the string in this file
+    // Close the file
+    }
 }
 
 class Handler {
-let fileManager = FilesystemManager()
-func handle(string: String) {
-fileManager.save(string: string)
-}
+    let fileManager = FilesystemManager()
+    func handle(string: String) {
+        fileManager.save(string: string)
+    }
 }
 
 ```
@@ -2931,69 +3082,68 @@ We can solve this dependency using protocol Storage. In this way, **Handler** ca
 ```
 
 protocol Storage {
-func save(string: String)
+    func save(string: String)
 }
 
 class FileSystemManager: Storage {
-func save(string: String) {
-// Open a file in read-mode
-// Save the string in this file
-// Close the file
-}
+    func save(string: String) {
+    // Open a file in read-mode
+    // Save the string in this file
+    // Close the file
+    }
 }
 
 class DatabaseManager: Storage {
-func save(string: String) {
-// Connect to the database
-// Execute the query to save the string in a table
-// Close the connection
-}
+    func save(string: String) {
+    // Connect to the database
+    // Execute the query to save the string in a table
+    // Close the connection
+    }
 }
 
 class Handler {
-let storage: Storage
-// Storage types
-init(storage: Storage) {
-self.storage = storage
-}
+    let storage: Storage
+    // Storage types
+    init(storage: Storage) {
+        self.storage = storage
+    }
 
-       func handle(string: String) {
-           storage.save(string: string)
-       }
+    func handle(string: String) {
+        storage.save(string: string)
+    }
 
 }
 
 protocol Storage {
-func save(string: String)
+    func save(string: String)
 }
 
 class FileSystemManager: Storage {
-func save(string: String) {
-// Open a file in read-mode
-// Save the string in this file
-// Close the file
-}
+    func save(string: String) {
+    // Open a file in read-mode
+    // Save the string in this file
+    // Close the file
+    }
 }
 
 class DatabaseManager: Storage {
-func save(string: String) {
-// Connect to the database
-// Execute the query to save the string in a table
-// Close the connection
-}
+    func save(string: String) {
+    // Connect to the database
+    // Execute the query to save the string in a table
+    // Close the connection
+    }
 }
 
 class Handler {
-let storage: Storage
-// Storage types
-init(storage: Storage) {
-self.storage = storage
-}
+    let storage: Storage
+    // Storage types
+    init(storage: Storage) {
+        self.storage = storage
+    }
 
-       func handle(string: String) {
-           storage.save(string: string)
-       }
-
+    func handle(string: String) {
+        storage.save(string: string)
+    }
 }
 
 ```
@@ -3008,6 +3158,18 @@ self.storage = storage
 4. VIP
 5. MVP
 6. VIPER
+7. RIB
+8. TCA
+
+## 7. RIB - Router Interactor Builder
+
+Business logic driven arhitecture.
+
+- Router is responsible for navigation between the adjacenet RIBS
+- Interator is the main component, that handles the RIB business logic. It reacts to user interactions, talks to a backend, and prepares data that will be displayed to the user.
+- Builder is a constructor that builds together all the RIB pieces.
+
+## 7. TCA - The Composable Architecture
 
 # Clean Architecture
 
@@ -3021,48 +3183,162 @@ Communicates with the stakeholders and manage expectations.
 
 ### CICD - Continuous Integration, Continuous Deployment
 
- 1. Create a branch from development
+1.  Create a branch from development
 
- Continuous Integration
- 2. Development
- 3. Test Cases
- 4. Create a PR
- 5. Merge the PR
+Continuous Integration
 
- Continuous Deployment
- 6. Upload a build to testflight
- 7. AppStore
+2. Development
+3. Test Cases
+4. Create a PR
+5. Merge the PR
 
- Jenkins
- Download the code and automatically run tests.
- https://medium.com/edureka/jenkins-tutorial-68110a2b4bb3
+Continuous Deployment
 
- Fastlane
- https://fastlane.tools/
+6. Upload a build to testflight
+7. AppStore
 
- 1. Jenkins
- 2. AzureCLI
- 3. CircleCI
- 4. Bitrise
- 5. Hudson
- 6. Github Actions
+Jenkins
+Download the code and automatically run tests.
+https://medium.com/edureka/jenkins-tutorial-68110a2b4bb3
 
- Steps
- 1. Checkout
- 2. Build
- 3. Test
- 4. Deploy
+Fastlane
+https://fastlane.tools/
 
- Readings:
- - https://medium.com/@elenipapanikolo/integrating-ci-cd-for-multiple-environments-with-jenkins-fastlane-part-1-2-6e12b1ea5578
- - https://itnext.io/jenkins-tutorial-part-10-work-with-git-in-pipeline-b5e42f6d124b
+1.  Jenkins
+2.  AzureCLI
+3.  CircleCI
+4.  Bitrise
+5.  Hudson
+6.  Github Actions
+
+Steps
+
+1.  Checkout
+2.  Build
+3.  Test
+4.  Deploy
+
+Readings:
+
+- https://medium.com/@elenipapanikolo/integrating-ci-cd-for-multiple-environments-with-jenkins-fastlane-part-1-2-6e12b1ea5578
+- https://itnext.io/jenkins-tutorial-part-10-work-with-git-in-pipeline-b5e42f6d124b
+
+# Deep Linking
+
+Deep linking in iOS refers to the practice of creating hyperlinks that direct users not onl to a specific app but also to specific content or pages within that app. It enables a more seamless and personalized user experience by allowing users to bypass the app's home screen and navigate directly to the relevant content.
+
+1. Traditional/Basic Deep Linking
+
+- Basic deep linking involves linking to a specific page or content within an app. When a user clicks on a deep link, the app is opened, and the user is taken directly to the linked content.
+- Example: `myapp://product/123`
+
+2. Deferred Deep Llinking
+
+- Deferred deep linking allows for a more dynamic experience by handling scenarios where the app is not installed when the deep link is clicked. If the app is not installed, the user is directed to the App Store for installation. After installation, the app opens and navigates to the specific content.
+- This is particularly useful for user onboarding and retention, as users as taken directly to the content they were interested in, even if they installed the app after clicking the link.
+- Example: `myapp://product/123` might lead to the installation of the app and then open it directly to the product with ID 123.
+
+## Key-Value Coding (KVC)
+
+**1. Purpose**: **KVC allows indirect access to an object's properties by name.** Instead of directly accessing a property using a method or property syntax, you can get or set the value of property using a key string.
+
+**2. Usage**: You can use KVC to access properties dynamically, which can be useful in scenarios where you need to work with properties whose names are determined at runtime or provided as strings.
+
+**3. Example**
+
+```
+let value = object.value(forKey: "propertyName")
 ```
 
-```
+**4. Flexiblity**: KVC provides a level of abstraction, allowing you to work with properties without knowing their names at comile time.
+
+## Key-Value Observing (KVO)
+
+**1. Purpose**: **KVO allows objects to be notified of changes to the properties of other objects.** It enables one object (the observer) to observe changes in the value of a property of another object (the observed).
+
+**2. Usage**: You register an obsever for a specific key path on an observed object and the observer is then notified when the value at that key path changes.
+
+**3. Example**
 
 ```
-
+observedObject.addObserver(observer, forKeyPath: "propertyName", options: .new, context: nil)
 ```
 
+Implementing the observer method
+
 ```
-````
+override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    // Handle the observed value change
+}
+```
+
+**4. Event-Driven**: KVO is event-driven and allows objects to react to changes in other objects without explicit notifications.
+
+**5. Automatic Notification**:
+
+## Dynamic Dispatch
+
+Dynamic dispatch, also known as late binding or runtime polymorphism, is a concept in object-oriented programming, including iOS development, that allows the selection of the appropriate metho or function to be determined at runtime. Dynamic dispatch is crutial for achieving polymorphism, a key feature of object-oriented languages.
+
+1. **Static Dispatch vs. Dynamic Dispatch**
+
+- In static dispatch (or early binding), the compilar determins at compile-time which method to call based on the declared type of the object. This decision is made before the program runs.
+- In dynamic dispatch (or late binding), the method to be called is determiend at runtime based on the actual type of the object. This allows for more flexibility and adaptability.
+
+2. **Polymorphism**
+
+- Dynamic dispatch is a key enabler of polyphormis, which allows objects of different types to be treated as instances of common base type. This is achieved through the user of interfaces, protocols, or inheritance.
+
+3. **Example**
+
+```
+class Animal {
+    func makeSound() {
+        print("Some generic sound")
+    }
+}
+
+class Dog: Animal {
+    override func makeSound() {
+        print("Bark")
+    }
+}
+
+let myPet: Animal = Dog()
+myPet.makeSound() // Output: Bark
+```
+
+4. **Advantages**
+
+- Dynamic dispatch allows for more flexible and extensible code. New subclasses can be added without modifying existing code that relies on polymorphism.
+- It supports the principle of encapsulation, where the internal details of an object's implementation can change without affecting its external behavior.
+
+5. **Performance Considerations**
+
+- While dynamic dispatch provides flexibility, it may introduce a slight performance overhead compared to static dispatch. However, modern runtime systems and compilers often optimize dynamic dispatch to minimize this impact.
+
+## GraphQL
+
+GraphQL is a query language for APIs (Application Programming Interfaces) and a runtime for executing those queries with your existing data. It was developed by Facebook and later open-sourced. GraphQL provides a more efficient, powerful, and flexible alternative to traditional REST APIs.
+
+### Key Concepts of GraphQL
+
+1. **Declarative Data Fetching**
+
+- Clients can specify the shape and structure of the data they need. This eliminates over-fetching or under-fetcing of data, allowing clients to request only the informaion they require.
+
+2. **Single Endpoint**
+
+- Unlike REST APIs that often have multiple endpoints for different resources, GraphQL typically exposes a single endpoint for all interractions. This simplifies the API struture and makes it more straightforeward for clients.
+
+3. **Strong Typing**
+
+- GraphQL APIs are strongly typed. The schema defines the types of data that can be queried, and clients receive responses in the same shape as their queries. This helps catch errors early in the development process.
+
+4. Real-time Data with Subscriptions
+
+- GraphQL supports real-time data updates through subscriptions. Clients can subscribe to specific events, and the server will push updates to the clients when relevant data changes.
+
+5. **Introspection**
+
+- GraphQL allows clients to introspect the schema to discover the types, queries, and mutations available. This self-documentation feature makees it easier for developers to understand and use the API.

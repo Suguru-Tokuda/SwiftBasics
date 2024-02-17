@@ -146,7 +146,6 @@ extension String.StringInterpolation {
     }
 }
 
-
 let number = Int.random(in: 0...100)
 let lucky = "The lucky number this week is \(number, style: .spellOut)."
 print(lucky)

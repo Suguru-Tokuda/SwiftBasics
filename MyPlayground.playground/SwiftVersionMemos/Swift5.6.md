@@ -210,5 +210,4 @@ struct NewContentView: View {
         Text("Hello, world!")
     }
 }
-
 ```
